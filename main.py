@@ -557,9 +557,26 @@ class StandardNN_Simple_BN_V2(nn.Module):
         x = self.fc4(x)
         return x
 
-# CUDA setup injected below
+# --- Device selection (CUDA if available, else CPU) ---
+if torch.cuda.is_available():
+    device = torch.device('cuda')
+    DEVICE_NAME = 'CUDA'
+else:
+    device = torch.device('cpu')
+    DEVICE_NAME = 'CPU'
+print(f"Using device: {device}")
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+def set_memory_fraction(fraction: float):
+    """
+    If running on CUDA, set per‐process GPU memory fraction.
+    fraction: float between 0 and 1.
+    """
+    if device.type == 'cuda':
+        try:
+            torch.cuda.set_per_process_memory_fraction(fraction, device=device)
+            print(f"Set GPU memory fraction to {fraction}")
+        except Exception as e:
+            print(f"Warning: Could not set memory fraction: {e}")
 
 def train_model(model,
                 X_train, y_train,
@@ -571,9 +588,8 @@ def train_model(model,
                 patience=PATIENCE,
                 grad_clip_value=1.0,
                 epoch_cb=None):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
-    scaler = GradScaler()
+    scaler = GradScaler() if device.type == "cuda" else None
 
     train_ds = TensorDataset(torch.FloatTensor(X_train), torch.LongTensor(y_train.astype(int)))
     val_ds   = TensorDataset(torch.FloatTensor(X_val),   torch.LongTensor(y_val.astype(int)))
@@ -581,10 +597,10 @@ def train_model(model,
     num_workers = min(4, os.cpu_count())
 
     train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True,
-    num_workers=8, pin_memory=True, persistent_workers=True, prefetch_factor=4
-)
+                              num_workers=8, pin_memory=(device.type=='cuda'),
+                              persistent_workers=True, prefetch_factor=4)
     val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False, drop_last=False,
-                            num_workers=num_workers, pin_memory=(device.type == "cuda"), prefetch_factor=2)
+                            num_workers=num_workers, pin_memory=(device.type=='cuda'), prefetch_factor=2)
 
     optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
     scheduler = CosineAnnealingLR(optimizer, T_max=epochs, eta_min=lr*0.01)
@@ -600,18 +616,22 @@ def train_model(model,
         running_loss, batches = 0.0, 0
         for Xb, yb in train_loader:
             Xb, yb = Xb.to(device), yb.to(device)
-            Xb, yb = Xb.to(device), yb.to(device)
             optimizer.zero_grad()
-            with autocast(device_type='cuda'):
+            with autocast(device_type=device.type):
                 out = model(Xb)
                 loss = criterion(out, yb)
             if torch.isnan(loss) or torch.isinf(loss):
                 continue
-            scaler.scale(loss).backward()
-            scaler.unscale_(optimizer)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip_value)
-            scaler.step(optimizer)
-            scaler.update()
+            if scaler:
+                scaler.scale(loss).backward()
+                scaler.unscale_(optimizer)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip_value)
+                scaler.step(optimizer)
+                scaler.update()
+            else:
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip_value)
+                optimizer.step()
             running_loss += loss.item()
             batches += 1
 
@@ -678,7 +698,6 @@ def train_model(model,
 
 def evaluate_model(model, X_test, y_test, batch_size=BATCH_SIZE):
     """ Evaluates the model and returns accuracy, RMSE, MAE, confusion matrix, predictions, and labels. """
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
     model.eval()
 

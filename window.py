@@ -37,6 +37,18 @@ class App(tk.Tk):
         ttk.Label(ctrl_frame, text="Epochs:").grid(row=0, column=4, padx=2)
         tk.Spinbox(ctrl_frame, from_=1, to=500, textvariable=self.epochs_var, width=5).grid(row=0, column=5)
 
+        # Device indicator
+        self.device_label = ttk.Label(self, text=f"Device: {main.DEVICE_NAME}")
+        self.device_label.pack(pady=5)
+
+        # GPU memory fraction control
+        mem_frame = ttk.Frame(self)
+        mem_frame.pack(pady=5)
+        ttk.Label(mem_frame, text="GPU Memory Fraction:").grid(row=0, column=0, padx=2)
+        self.mem_fraction_var = tk.DoubleVar(value=0.9)
+        tk.Spinbox(mem_frame, from_=0.1, to=1.0, increment=0.1,
+                   textvariable=self.mem_fraction_var, width=5).grid(row=0, column=1)
+
         # Start button
         self.start_btn = ttk.Button(self, text="Start Cross‑Validation", command=self.start_cv)
         self.start_btn.pack(pady=10)
@@ -141,6 +153,9 @@ class App(tk.Tk):
         old_out, old_err = sys.stdout, sys.stderr
         sys.stdout = RedirectLogger(self.log_file)
         sys.stderr = RedirectLogger(self.log_file)
+
+        # apply memory fraction before starting cross‐validation
+        main.set_memory_fraction(self.mem_fraction_var.get())
 
         try:
             run_cv(progress_cb, time_cb, log_cb, selected, n_runs=runs, n_folds=folds, n_epochs=epochs)
