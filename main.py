@@ -557,9 +557,26 @@ class StandardNN_Simple_BN_V2(nn.Module):
         x = self.fc4(x)
         return x
 
-# CUDA setup injected below
+# --- Device selection (CUDA if available, else CPU) ---
+if torch.cuda.is_available():
+    device = torch.device('cuda')
+    DEVICE_NAME = 'CUDA'
+else:
+    device = torch.device('cpu')
+    DEVICE_NAME = 'CPU'
+print(f"Using device: {device}")
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+def set_memory_fraction(fraction: float):
+    """
+    If running on CUDA, set per‐process GPU memory fraction.
+    fraction: float between 0 and 1.
+    """
+    if device.type == 'cuda':
+        try:
+            torch.cuda.set_per_process_memory_fraction(fraction, device=device)
+            print(f"Set GPU memory fraction to {fraction}")
+        except Exception as e:
+            print(f"Warning: Could not set memory fraction: {e}")
 
 def train_model(model,
                 X_train, y_train,
@@ -569,10 +586,10 @@ def train_model(model,
                 lr=LEARNING_RATE,
                 weight_decay=WEIGHT_DECAY,
                 patience=PATIENCE,
-                grad_clip_value=1.0):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+                grad_clip_value=1.0,
+                epoch_cb=None):
     model.to(device)
-    scaler = GradScaler()
+    scaler = GradScaler() if device.type == "cuda" else None
 
     train_ds = TensorDataset(torch.FloatTensor(X_train), torch.LongTensor(y_train.astype(int)))
     val_ds   = TensorDataset(torch.FloatTensor(X_val),   torch.LongTensor(y_val.astype(int)))
@@ -580,10 +597,10 @@ def train_model(model,
     num_workers = min(4, os.cpu_count())
 
     train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True,
-    num_workers=8, pin_memory=True, persistent_workers=True, prefetch_factor=4
-)
+                              num_workers=8, pin_memory=(device.type=='cuda'),
+                              persistent_workers=True, prefetch_factor=4)
     val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False, drop_last=False,
-                            num_workers=num_workers, pin_memory=(device.type == "cuda"), prefetch_factor=2)
+                            num_workers=num_workers, pin_memory=(device.type=='cuda'), prefetch_factor=2)
 
     optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
     scheduler = CosineAnnealingLR(optimizer, T_max=epochs, eta_min=lr*0.01)
@@ -599,18 +616,22 @@ def train_model(model,
         running_loss, batches = 0.0, 0
         for Xb, yb in train_loader:
             Xb, yb = Xb.to(device), yb.to(device)
-            Xb, yb = Xb.to(device), yb.to(device)
             optimizer.zero_grad()
-            with autocast(device_type='cuda'):
+            with autocast(device_type=device.type):
                 out = model(Xb)
                 loss = criterion(out, yb)
             if torch.isnan(loss) or torch.isinf(loss):
                 continue
-            scaler.scale(loss).backward()
-            scaler.unscale_(optimizer)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip_value)
-            scaler.step(optimizer)
-            scaler.update()
+            if scaler:
+                scaler.scale(loss).backward()
+                scaler.unscale_(optimizer)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip_value)
+                scaler.step(optimizer)
+                scaler.update()
+            else:
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip_value)
+                optimizer.step()
             running_loss += loss.item()
             batches += 1
 
@@ -658,6 +679,9 @@ def train_model(model,
                 print(f"Early stopping at epoch {epoch}")
                 break
 
+        if epoch_cb:
+            epoch_cb(epoch, epochs)
+
         if epoch % 10 == 0 or epoch == epochs:
             print(f"Epoch {epoch:02d}: TrainLoss={train_losses[-1]:.4f}, ValLoss={val_losses[-1]:.4f}, ValAcc={val_accs[-1]:.4f}")
 
@@ -674,7 +698,6 @@ def train_model(model,
 
 def evaluate_model(model, X_test, y_test, batch_size=BATCH_SIZE):
     """ Evaluates the model and returns accuracy, RMSE, MAE, confusion matrix, predictions, and labels. """
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
     model.eval()
 
@@ -829,45 +852,46 @@ def plot_fft_spectrum(signal: np.ndarray, sampling_rate: int, signal_name: str, 
     except Exception as e:
         print(f"Failed to save FFT plot for {signal_name}: {e}")
     plt.close()
+
 def plot_eeg_like_stack(X_data, y_data, dataset_name, n_examples=3):
     """
-    Stacked plot like your uploaded EEG example.
-    Rows = (example x channels), colored by class.
+    Stacked plot of signals: rows = (example × channel), colored by class.
+    Removed per‑subplot titles and labels.
     """
     if X_data is None or X_data.size == 0:
-        print(f"Skipping EEG-like stack plot: No data.")
+        print(f"Skipping stacked plot for {dataset_name}: No data.")
         return
 
     n_samples, n_channels, n_timesteps = X_data.shape
     n_examples = min(n_examples, n_samples)
     time_axis = np.arange(n_timesteps)
 
-    fig, axes = plt.subplots(n_examples * n_channels, 1, figsize=(12, 2.5 * n_examples * n_channels), sharex=True)
+    fig, axes = plt.subplots(n_examples * n_channels, 1,
+                             figsize=(12, 2.5 * n_examples * n_channels),
+                             sharex=True)
 
-    if not isinstance(axes, np.ndarray):
-        axes = [axes]
+    # flatten axes array
+    axes = np.array(axes).flatten()
 
-    plot_idx = 0
     for ex in range(n_examples):
-        label = int(y_data[ex]) if y_data is not None else 'N/A'
+        label = int(y_data[ex]) if y_data is not None else 0
         color = 'red' if label == 1 else 'blue'
         for ch in range(n_channels):
-            ax = axes[plot_idx]
-            signal = X_data[ex, ch, :]
-            ax.plot(time_axis, signal, color=color, linewidth=1)
-            ax.set_ylabel('Amplitude', fontsize=8)
-            ax.set_title(f'{dataset_name} Ex {ex+1} Ch {ch+1} Label {label}', fontsize=10)
+            idx = ex * n_channels + ch
+            ax = axes[idx]
+            ax.plot(time_axis, X_data[ex, ch, :], color=color, linewidth=1)
+            ax.set_ylabel(f'Ch{ch+1}', fontsize=8)
             ax.grid(True, linestyle='--', alpha=0.5)
             ax.set_xlim(0, n_timesteps)
             ax.tick_params(axis='both', labelsize=8)
-            plot_idx += 1
 
     plt.xlabel('Time Step', fontsize=10)
-    plt.tight_layout()
-    out_path = os.path.join(RESULTS_DIR, f"{dataset_name}_stacked_eeg_plot.png")
+    fig.suptitle(f'{dataset_name} – Stacked Signals', fontsize=14)
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    out_path = os.path.join(RESULTS_DIR, f"{dataset_name}_stacked_signals.png")
     plt.savefig(out_path, dpi=300)
     plt.close()
-    print(f"Saved stacked EEG-like plot: {out_path}")
+    print(f"Saved stacked plot: {out_path}")
 
 
 def plot_confusion_matrix(conf_matrix, classes, title, dataset_name, model_name):
@@ -903,137 +927,51 @@ def plot_confusion_matrix(conf_matrix, classes, title, dataset_name, model_name)
     plt.close()
     print(f"Saved confusion matrix: {filename}")
 
-def plot_multi_channel_examples(X_data, y_data, dataset_name, n_examples=3, n_channels_to_plot=None):
-    # (Plotting function remains the same, except SyntaxError fix)
-    if X_data is None or X_data.size == 0:
-        print(f"Skipping signal plot for {dataset_name}: No data provided.")
-        return
-
-    n_samples, n_channels, n_timesteps = X_data.shape
-
-    # FIX: Corrected SyntaxError here
-    n_examples = min(n_examples, n_samples)
-    if n_examples <= 0: # Check <= 0
-        print(f"Skipping signal plot for {dataset_name}: No examples to plot.")
-        return
-
-    # Determine number of channels to plot
-    if n_channels_to_plot is None:
-        channels_to_plot = list(range(n_channels))
-    else:
-        channels_to_plot = list(range(min(n_channels, n_channels_to_plot)))
-    num_plot_channels = len(channels_to_plot)
-    if num_plot_channels <= 0: # Check <= 0
-         print(f"Skipping signal plot for {dataset_name}: No channels selected to plot.")
-         return
-
-
-    print(f"\nVisualizing {dataset_name} signals ({num_plot_channels}/{n_channels} channels shown)...")
-    plt.figure(figsize=(14, max(2, 2 * n_examples * num_plot_channels))) # Ensure positive height
-
-    # Check for valid timesteps
-    if n_timesteps <= 0:
-        print(f"Skipping signal plot for {dataset_name}: Invalid number of timesteps ({n_timesteps}).")
-        plt.close()
-        return
-    time_axis = np.arange(n_timesteps) # Simple time steps for x-axis
-
-    for i in range(n_examples):
-        for plot_ch_idx, ch in enumerate(channels_to_plot):
-            plot_idx = i * num_plot_channels + plot_ch_idx + 1
-            plt.subplot(n_examples * num_plot_channels, 1, plot_idx)
-
-            signal_data = X_data[i, ch, :]
-            label = int(y_data[i]) if y_data is not None and i < len(y_data) else 'N/A'
-            plot_title = f'{dataset_name} Ex {i+1} Ch {ch+1} Label {label}'
-
-            # Check for NaNs/Infs in this specific signal
-            if np.isnan(signal_data).any() or np.isinf(signal_data).any():
-                 plt.text(0.5, 0.5, 'NaN/Inf Data', ha='center', va='center', transform=plt.gca().transAxes, color='red')
-                 plot_title += ' (INVALID DATA)'
-                 plt.plot(time_axis, np.zeros_like(time_axis), color='gray') # Plot a flat line
-            else:
-                 color = 'red' if label == 1 else ('blue' if label == 0 else 'green') # Color based on label
-                 plt.plot(time_axis, signal_data, color=color, linewidth=0.8) # Thinner line
-
-            plt.title(plot_title, fontsize=10)
-            # plt.xlabel('Time Step') # Can make plot crowded, optional
-            plt.ylabel('Amplitude', fontsize=9)
-            plt.tick_params(axis='both', which='major', labelsize=8)
-            plt.grid(True, linestyle='--', alpha=0.6)
-            plt.xlim(0, n_timesteps)
-
-
-    plt.tight_layout(pad=1.5, h_pad=2.0) # Adjust padding
-    plot_filename = f'results/{dataset_name.lower()}_signal_examples.png'
-    plt.savefig(os.path.join(RESULTS_DIR, f"{dataset_name}_training_comparison.png"))
-    plt.close()
-    print(f"Saved {dataset_name} signal examples plot: {plot_filename}")
 
 # --- NEW Plotting Function: Training Data Scatter via PCA ---
 def plot_training_scatter(X_train, y_train, dataset_name):
-    """ Plots a scatter plot of the first two PCA components of the training data. """
-    filename = f'results/{dataset_name}_training_scatter_pca.png'
+    """ Plots a scatter of first two PCA components of the training data. """
+    out_file = f"{dataset_name}_training_scatter_pca.png"
+    out_path = os.path.join(RESULTS_DIR, out_file)
     print(f"Generating PCA scatter plot for {dataset_name} training data...")
 
-    if X_train is None or X_train.size == 0 or y_train is None or y_train.size == 0:
-        print(f"Skipping scatter plot for {dataset_name}: No training data or labels.")
-        return
-    if X_train.shape[0] != y_train.shape[0]:
-        print(f"Skipping scatter plot for {dataset_name}: Mismatch between X_train samples ({X_train.shape[0]}) and y_train labels ({y_train.shape[0]}).")
-        return
-
-    n_samples = X_train.shape[0]
-    # Flatten data if it's 3D (samples, channels, timesteps)
-    if X_train.ndim == 3:
-        try:
-            X_flat = X_train.reshape(n_samples, -1)
-        except Exception as e:
-            print(f"Error reshaping X_train for PCA: {e}. Skipping scatter plot.")
-            return
-    elif X_train.ndim == 2:
-        X_flat = X_train
-    else:
-        print(f"Skipping scatter plot for {dataset_name}: Unexpected X_train dimensions ({X_train.ndim}). Expected 2 or 3.")
-        return
-
-    # Check for NaNs/Infs before PCA
-    if np.isnan(X_flat).any() or np.isinf(X_flat).any():
-        print(f"Warning: NaNs/Infs found in flattened training data for {dataset_name}. Replacing with 0 before PCA.")
-        X_flat = np.nan_to_num(X_flat)
-
-    # Apply PCA
     try:
-        pca = PCA(n_components=2)
-        # It's good practice to scale data before PCA
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X_flat)
-        X_pca = pca.fit_transform(X_scaled)
-    except ValueError as e:
-         print(f"Error during PCA for {dataset_name}: {e}. Skipping scatter plot. (Ensure n_samples >= 2)")
-         return
+        if X_train is None or X_train.size == 0 or y_train is None or y_train.size == 0:
+            print(f"Skipping scatter plot for {dataset_name}: No data.")
+            return
+        if X_train.shape[0] != y_train.shape[0]:
+            print(f"Skipping scatter plot for {dataset_name}: Sample/label mismatch.")
+            return
+
+        # flatten
+        n_samples = X_train.shape[0]
+        X_flat = X_train.reshape(n_samples, -1) if X_train.ndim == 3 else X_train
+
+        # sanitize
+        X_flat = np.nan_to_num(X_flat)
+        # PCA
+        scaler = StandardScaler(); X_scaled = scaler.fit_transform(X_flat)
+        pca = PCA(n_components=2); X_pca = pca.fit_transform(X_scaled)
+
+        # plot
+        plt.figure(figsize=(8,6))
+        labels = np.unique(y_train)
+        colors = plt.cm.viridis(np.linspace(0,1,len(labels)))
+        for lbl, clr in zip(labels, colors):
+            idx = np.where(y_train==lbl)
+            plt.scatter(X_pca[idx,0], X_pca[idx,1], label=f"Class {int(lbl)}", alpha=0.6, color=clr, s=15)
+        plt.title(f"{dataset_name} Training Data (PCA 1 vs 2)")
+        plt.xlabel("PC1"); plt.ylabel("PC2")
+        plt.legend(); plt.grid(True, linestyle='--', alpha=0.5)
+        plt.tight_layout()
+
+        plt.savefig(out_path, dpi=300)
+        plt.close()
+        print(f"✅ Saved scatter plot: {out_path}")
+
     except Exception as e:
-        print(f"An unexpected error occurred during PCA for {dataset_name}: {e}. Skipping scatter plot.")
-        return
-
-    # Create scatter plot
-    plt.figure(figsize=(8, 6))
-    unique_labels = np.unique(y_train)
-    colors = plt.cm.viridis(np.linspace(0, 1, len(unique_labels)))
-    for label, color in zip(unique_labels, colors):
-        indices = np.where(y_train == label)
-        plt.scatter(X_pca[indices, 0], X_pca[indices, 1], label=f'Class {int(label)}', alpha=0.6, color=color, s=15) # Smaller points
-
-    plt.title(f'{dataset_name} Training Data (First 2 PCA Components)')
-    plt.xlabel('Principal Component 1')
-    plt.ylabel('Principal Component 2')
-    plt.legend()
-    plt.grid(True, linestyle='--', alpha=0.5)
-    plt.tight_layout()
-    plt.savefig(os.path.join(RESULTS_DIR, f"{dataset_name}_training_comparison.png"))
-    plt.close()
-    print(f"Saved training data scatter plot: {filename}")
-
+        print(f"Error in plot_training_scatter for {dataset_name}: {e}")
+        # don't re-raise, prevents crashing
 
 
 # --- Data Generation Functions (Unchanged) ---
@@ -1316,45 +1254,6 @@ def apply_reverb(signal, delay_samples, decay_factor):
     elif delay_samples < 0 and abs(delay_samples) < len(signal): # Handle negative delay (pre-delay?) although unusual
         reverberated_signal[:delay_samples] += signal[-delay_samples:] * decay_factor
     return reverberated_signal
-def plot_individual_channel_images(X_data, y_data, dataset_name, n_examples=3):
-    """
-    Saves each (sample, channel) signal as its own PNG image.
-    File format: results/{dataset}_{sample}_{channel}_label_{label}.png
-    """
-    if X_data is None or X_data.size == 0:
-        print(f"Skipping individual plots for {dataset_name}: No data provided.")
-        return
-
-    n_samples, n_channels, n_timesteps = X_data.shape
-    n_examples = min(n_examples, n_samples)
-    if n_examples <= 0:
-        print(f"Skipping individual plots for {dataset_name}: No valid examples.")
-        return
-
-    time_axis = np.arange(n_timesteps)
-
-    for i in range(n_examples):
-        label = int(y_data[i]) if y_data is not None and i < len(y_data) else 'N/A'
-        for ch in range(n_channels):
-            signal = X_data[i, ch, :]
-            plt.figure(figsize=(8, 3))
-            color = 'red' if label == 1 else ('blue' if label == 0 else 'green')
-
-            if np.isnan(signal).any() or np.isinf(signal).any():
-                plt.plot(time_axis, np.zeros_like(signal), color='gray', linestyle='--')
-                plt.title(f"{dataset_name} Sample {i+1} Channel {ch+1} - Label {label} (INVALID DATA)")
-            else:
-                plt.plot(time_axis, signal, color=color, linewidth=0.8)
-                plt.title(f"{dataset_name} Sample {i+1} Channel {ch+1} - Label {label}")
-
-            plt.xlabel('Time Step')
-            plt.ylabel('Amplitude')
-            plt.grid(True, linestyle='--', alpha=0.5)
-            plt.tight_layout()
-            filename = os.path.join(RESULTS_DIR, f"{dataset_name}_sample{i+1}_channel{ch+1}_label{label}.png")
-            plt.savefig(filename)
-            plt.close()
-            print(f"Saved: {filename}")
 
 def load_audio_data_multi_channel(n_samples=1000, n_timesteps=1024, n_channels=N_AUDIO_CHANNELS):
     print(f"\nGenerating Realistic Multi-Channel Audio Data V4 ({n_channels} channels, {n_timesteps} timesteps)...")
@@ -1501,8 +1400,9 @@ def run_fold(dataset_name: str,
              sampling_rate: float,
              train_idx: np.ndarray,
              test_idx: np.ndarray,
-             fold: int
-            ) -> Dict[str, Tuple[float,float,float]]:
+             fold: int,
+             epochs: int = EPOCHS,
+             epoch_cb=None) -> Dict[str, Tuple[float,float,float]]:
     """
     Runs training+evaluation on one CV fold.
     Returns a dict mapping model_name -> (acc, rmse, mae).
@@ -1529,6 +1429,7 @@ def run_fold(dataset_name: str,
 
     results = {}
     histories = {}
+    conf_mats = {}
     for name, model in models.items():
         # select appropriate inputs
         if name.startswith('SNN'):
@@ -1541,156 +1442,40 @@ def run_fold(dataset_name: str,
             y_tr_i, y_val_i, y_te_i = y_tr, y_tr, y_te
 
         # train & eval
-        trained, history = train_model(model, X_tr_i, y_tr_i, X_val_i, y_val_i,
-                                 epochs=EPOCHS, batch_size=BATCH_SIZE,
-                                 lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY,
-                                 patience=PATIENCE)
-        acc, rmse, mae, _, _, _ = evaluate_model(trained, X_te_i, y_te_i)
+        trained, history = train_model(
+            model, X_tr_i, y_tr_i, X_val_i, y_val_i,
+            epochs=epochs, batch_size=BATCH_SIZE,
+            lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY,
+            patience=PATIENCE, grad_clip_value=1.0,
+            epoch_cb=epoch_cb
+        )
+        acc, rmse, mae, cm, _, _ = evaluate_model(trained, X_te_i, y_te_i)
         results[name] = (acc, rmse, mae)
+        conf_mats[name] = cm
         histories[name] = history
 
-    return results,histories
-def plot_all_channels_grid(X_data, y_data, dataset_name, n_examples=3, n_channels_to_plot=None):
-    """
-    Plots multiple signals in a grid: rows = examples, columns = channels.
-    Each subplot shows a single channel of a single example.
-    """
-    if X_data is None or X_data.size == 0:
-        print(f"Skipping grid plot for {dataset_name}: No data.")
-        return
-
-    n_samples, n_channels, n_timesteps = X_data.shape
-    n_examples = min(n_examples, n_samples)
-
-    if n_channels_to_plot is None:
-        channels_to_plot = list(range(n_channels))
-    else:
-        channels_to_plot = list(range(min(n_channels, n_channels_to_plot)))
-
-    fig, axes = plt.subplots(n_examples, len(channels_to_plot), figsize=(3.5 * len(channels_to_plot), 2.5 * n_examples))
-    time_axis = np.arange(n_timesteps)
-
-    if n_examples == 1:
-        axes = np.expand_dims(axes, axis=0)  # Ensure 2D for consistency
-    if len(channels_to_plot) == 1:
-        axes = np.expand_dims(axes, axis=1)
-
-    for row in range(n_examples):
-        label = int(y_data[row]) if y_data is not None and row < len(y_data) else 'N/A'
-        for col, ch in enumerate(channels_to_plot):
-            ax = axes[row][col]
-            signal = X_data[row, ch, :]
-            color = 'red' if label == 1 else 'blue'
-            ax.plot(time_axis, signal, color=color, linewidth=0.8)
-            ax.set_title(f"Ex {row+1} Ch {ch+1} (Label {label})", fontsize=10)
-            ax.set_xlim(0, n_timesteps)
-            ax.set_xticks([]); ax.set_yticks([])
-            ax.grid(True, linestyle='--', alpha=0.3)
-
-    plt.tight_layout()
-    out_path = os.path.join(RESULTS_DIR, f"{dataset_name}_channel_grid.png")
-    plt.savefig(out_path)
-    plt.close()
-    print(f"Saved multi-channel grid image: {out_path}")
+    return results, histories, conf_mats
+    
+    
+# --- Expose for runner.py ---
+data_loaders = {
+    "EEG": load_eeg_data_multi_channel,
+    "ECG": load_ecg_data_multi_channel,
+    "Audio": load_audio_data_multi_channel
+}
+n_splits = 5
 
 if __name__ == "__main__":
-    from sklearn.model_selection import StratifiedKFold
-    data_loaders = {
-        "EEG": load_eeg_data_multi_channel,
-        "ECG": load_ecg_data_multi_channel,
-        "Audio": load_audio_data_multi_channel
-    }
-    n_splits = 5
-    all_metrics_results = {}
+    from window import App
+    App().mainloop()
 
-    # Open the file to write the results
-    with open("cross_validation_results.txt", "w") as result_file:
-        result_file.write("Cross-Validation Results\n")
-        result_file.write("="*40 + "\n")
-
-        for run_id in range(1, 6):  # Run 5 times
-            print(f"\n{'#'*10} STARTING RUN {run_id} {'#'*10}")
-            start_time = time.time()  # Track start time
-
-            for dataset_name, loader in data_loaders.items():
-                print(f"{'='*15} Cross-Validating Dataset: {dataset_name.upper()} ({n_splits}-Fold) {'='*15}")
-                X_train, X_val, X_test, y_train, y_val, y_test, sampling_rate = loader()
-                X_pool = np.concatenate([X_train, X_val, X_test], axis=0)
-                y_pool = np.concatenate([y_train, y_val, y_test], axis=0).astype(int)
-
-                avg_signal = np.mean(X_pool, axis=0)
-                plot_fft_spectrum(avg_signal, sampling_rate, signal_name=dataset_name.upper(), results_dir=RESULTS_DIR)
-                plot_eeg_like_stack(X_pool, y_pool, dataset_name)
-                plot_training_scatter(X_train, y_train, dataset_name)
-                n_samples, n_channels, n_timesteps = X_pool.shape
-                X_flat = X_pool.reshape(n_samples, -1)
-
-                skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
-                try:
-                    per_fold_outputs = Parallel(n_jobs=min(4, os.cpu_count()), backend="threading")(
-                        delayed(run_fold)(
-                            dataset_name, X_pool, y_pool, sampling_rate,
-                            train_idx, test_idx, fold+1
-                        )
-                        for fold, (train_idx, test_idx) in enumerate(skf.split(X_flat, y_pool))
-                    )
-                except KeyboardInterrupt:
-                    print("Cross-validation interrupted by user.")
-                    exit(0)
-
-                fold_metrics = { m: [] for m in ['SNN_V2','FENS_MLP_V4','SCOFNA_Conv_V4'] }
-                fold_histories = { m: [] for m in ['SNN_V2','FENS_MLP_V4','SCOFNA_Conv_V4'] }
-
-                for result_dict, history_dict in per_fold_outputs:
-                    for model_name in result_dict:
-                        fold_metrics[model_name].append(result_dict[model_name])
-                        fold_histories[model_name].append(history_dict[model_name])
-
-                # Aggregate metrics
-                summary = {}
-                for name, metrics_list in fold_metrics.items():
-                    accs, rmses, maes = zip(*metrics_list)
-                    summary[name] = {
-                        'Accuracy': (np.mean(accs), np.std(accs)),
-                        'RMSE':     (np.mean(rmses), np.std(rmses)),
-                        'MAE':      (np.mean(maes), np.std(maes))
-                    }
-                    print(f"{name} — Avg Acc: {summary[name]['Accuracy'][0]:.4f} ± {summary[name]['Accuracy'][1]:.4f}")
-                all_metrics_results[dataset_name] = summary
-
-                # 📈 Plot average training curves for each model in this dataset
-                for model_name, histories in fold_histories.items():
-                    avg_history = {}
-                    for metric in histories[0]:
-                        all_vals = [h[metric] for h in histories if metric in h]
-                        max_len = max(len(v) for v in all_vals)
-                        padded = [v + [np.nan] * (max_len - len(v)) for v in all_vals]
-                        avg_vals = np.nanmean(padded, axis=0)
-                        avg_history[metric] = avg_vals.tolist()
-
-                    plot_comparison(
-                        histories=[avg_history],
-                        labels=[model_name],
-                        dataset_name=f"{dataset_name}_{model_name}"
-                    )
-
-            # Final cross-validation summary for the current run
-            print("="*20 + " Cross-Validation Summary " + "="*20)
-            result_file.write(f"\n{'#'*10} RUN {run_id} {'#'*10}\n")
-            for ds, res in all_metrics_results.items():
-                result_file.write(f"--- {ds} ---\n")
-                for name, stats in res.items():
-                    a, a_std = stats['Accuracy']
-                    r, r_std = stats['RMSE']
-                    m, m_std = stats['MAE']
-                    result_file.write(f"{name:<15} | Acc: {a:.4f}±{a_std:.4f} | RMSE: {r:.4f}±{r_std:.4f} | MAE: {m:.4f}±{m_std:.4f}\n")
-                    print(f"{name:<15} | Acc: {a:.4f}±{a_std:.4f} | RMSE: {r:.4f}±{r_std:.4f} | MAE: {m:.4f}±{m_std:.4f}")
-
-            end_time = time.time()  # Track end time
-            run_duration = end_time - start_time
-            print(f"Run {run_id} completed in {run_duration:.2f} seconds.")
-            result_file.write(f"Run {run_id} completed in {run_duration:.2f} seconds.\n")
-
-        print("\nDone cross-validation.")
-        result_file.write("="*40 + "\n")
-        result_file.write(f"Total execution time for all runs: {end_time - start_time:.2f} seconds.\n")
+def plot_confusion_matrix(cm, labels, title, out_path):
+    plt.figure(figsize=(6,5))
+    sns.heatmap(cm, annot=True, fmt='.0f', cmap='Blues',
+                xticklabels=labels, yticklabels=labels)  # use .0f to handle floats
+    plt.title(title)
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.tight_layout()
+    plt.savefig(out_path)
+    plt.close()
