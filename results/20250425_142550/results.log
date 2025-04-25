@@ -1,0 +1,321 @@
+Settings: dataset=['EEG', 'ECG', 'Audio'], runs=1, folds=2, epochs=20
+▶ Starting: runs=1, folds=2, epochs=20
+Generating Synthetic Multi-Channel EEG Data V4 (3 channels, 256 timesteps)...
+Generating Synthetic Multi-Channel EEG Data V4 (3 channels, 256 timesteps)...
+Scaling data per channel...
+Scaling data per channel...
+Scaling complete.
+Scaling complete.
+EEG Data Shapes: Train=(700, 3, 256), Val=(150, 3, 256), Test=(150, 3, 256)
+EEG Data Shapes: Train=(700, 3, 256), Val=(150, 3, 256), Test=(150, 3, 256)
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~64, Hidden: 192, Est. Total FC Input: 192
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~64, Hidden: 192, Est. Total FC Input: 192
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~64, Hidden: 192, Est. Total FC Input: 192
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~64, Hidden: 192, Est. Total FC Input: 192
+SCOFNA V4 Initialized: FFT Features/Ch: ~64, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+SCOFNA V4 Initialized: FFT Features/Ch: ~64, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+SCOFNA V4 Initialized: FFT Features/Ch: ~64, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+SCOFNA V4 Initialized: FFT Features/Ch: ~64, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+Epoch 10: TrainLoss=0.5441, ValLoss=0.6627, ValAcc=0.7000
+Epoch 10: TrainLoss=0.5441, ValLoss=0.6627, ValAcc=0.7000
+Epoch 10: TrainLoss=0.5542, ValLoss=0.6698, ValAcc=0.6400
+Epoch 10: TrainLoss=0.5542, ValLoss=0.6698, ValAcc=0.6400
+Epoch 20: TrainLoss=0.4270, ValLoss=0.6251, ValAcc=0.6800
+Epoch 20: TrainLoss=0.4270, ValLoss=0.6251, ValAcc=0.6800
+Epoch 20: TrainLoss=0.4453, ValLoss=0.6398, ValAcc=0.6700
+Epoch 20: TrainLoss=0.4453, ValLoss=0.6398, ValAcc=0.6700
+--- Evaluation: StandardNN_Simple_BN_V2 ---
+--- Evaluation: StandardNN_Simple_BN_V2 ---
+--- Evaluation: StandardNN_Simple_BN_V2 ---
+--- Evaluation: StandardNN_Simple_BN_V2 ---
+Test Accuracy: 0.7220
+Test Accuracy: 0.7220
+Test Accuracy: 0.6940
+Test Accuracy: 0.6940
+Test RMSE: 0.5273
+Test RMSE: 0.5273
+Test RMSE: 0.5532
+Test RMSE: 0.5532
+Test MAE: 0.2780
+Test MAE: 0.2780
+Test MAE: 0.3060
+Test MAE: 0.3060
+Initialized/Resized FFTLayer frequency weights to size: 129
+Initialized/Resized FFTLayer frequency weights to size: 129
+Initialized/Resized FFTLayer frequency weights to size: 129
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.5822, ValLoss=0.4918, ValAcc=0.8560
+Epoch 10: TrainLoss=0.5822, ValLoss=0.4918, ValAcc=0.8560
+Epoch 10: TrainLoss=0.5410, ValLoss=0.4760, ValAcc=0.8180
+Epoch 10: TrainLoss=0.5410, ValLoss=0.4760, ValAcc=0.8180
+Epoch 20: TrainLoss=0.4986, ValLoss=0.4488, ValAcc=0.8860
+Epoch 20: TrainLoss=0.4986, ValLoss=0.4488, ValAcc=0.8860
+Epoch 20: TrainLoss=0.5049, ValLoss=0.4620, ValAcc=0.8980
+Epoch 20: TrainLoss=0.5049, ValLoss=0.4620, ValAcc=0.8980
+--- Evaluation: FENS_MLP_V4 ---
+--- Evaluation: FENS_MLP_V4 ---
+--- Evaluation: FENS_MLP_V4 ---
+--- Evaluation: FENS_MLP_V4 ---
+Test Accuracy: 0.8560
+Test Accuracy: 0.8560
+Test Accuracy: 0.8620
+Test Accuracy: 0.8620
+Test RMSE: 0.3795
+Test RMSE: 0.3795
+Test RMSE: 0.3715
+Test RMSE: 0.3715
+Test MAE: 0.1440
+Test MAE: 0.1440
+Test MAE: 0.1380
+Test MAE: 0.1380
+Initialized/Resized FFTLayer frequency weights to size: 129
+Initialized/Resized FFTLayer frequency weights to size: 129
+Initialized/Resized FFTLayer frequency weights to size: 129
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.2915, ValLoss=0.6726, ValAcc=0.9020
+Epoch 10: TrainLoss=0.2915, ValLoss=0.6726, ValAcc=0.9020
+Epoch 10: TrainLoss=0.4660, ValLoss=0.6798, ValAcc=0.5440
+Epoch 10: TrainLoss=0.4660, ValLoss=0.6798, ValAcc=0.5440
+Epoch 20: TrainLoss=0.4315, ValLoss=0.6397, ValAcc=0.7860
+Epoch 20: TrainLoss=0.4315, ValLoss=0.6397, ValAcc=0.7860
+Epoch 20: TrainLoss=0.2370, ValLoss=0.6077, ValAcc=0.8920
+Epoch 20: TrainLoss=0.2370, ValLoss=0.6077, ValAcc=0.8920
+--- Evaluation: SCOFNA_Conv_V4 ---
+--- Evaluation: SCOFNA_Conv_V4 ---
+--- Evaluation: SCOFNA_Conv_V4 ---
+--- Evaluation: SCOFNA_Conv_V4 ---
+Test Accuracy: 0.8980
+Test Accuracy: 0.8980
+Test Accuracy: 0.7760
+Test Accuracy: 0.7760
+Test RMSE: 0.3194
+Test RMSE: 0.3194
+Test RMSE: 0.4733
+Test RMSE: 0.4733
+Test MAE: 0.2240
+Test MAE: 0.2240
+Test MAE: 0.1020
+Test MAE: 0.1020
+########## RUN 1 - EEG ##########
+SNN_V2          | Acc: 0.7080±0.0140 | RMSE: 0.5402±0.0130 | MAE: 0.2920±0.0140
+FENS_MLP_V4     | Acc: 0.8590±0.0030 | RMSE: 0.3755±0.0040 | MAE: 0.1410±0.0030
+SCOFNA_Conv_V4  | Acc: 0.8370±0.0610 | RMSE: 0.3963±0.0770 | MAE: 0.1630±0.0610
+Generating Synthetic Multi-Channel ECG Data V4 (3 channels, 512 timesteps)...
+Generating Synthetic Multi-Channel ECG Data V4 (3 channels, 512 timesteps)...
+Scaling data per channel...
+Scaling data per channel...
+Scaling complete.
+Scaling complete.
+ECG Data Shapes: Train=(700, 3, 512), Val=(150, 3, 512), Test=(150, 3, 512)
+ECG Data Shapes: Train=(700, 3, 512), Val=(150, 3, 512), Test=(150, 3, 512)
+SNN V2 Initialized: Input: 1536, HiddenSizes: 576/384/192, Output: 2
+SNN V2 Initialized: Input: 1536, HiddenSizes: 576/384/192, Output: 2
+SNN V2 Initialized: Input: 1536, HiddenSizes: 576/384/192, Output: 2
+SNN V2 Initialized: Input: 1536, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~64, Hidden: 192, Est. Total FC Input: 192
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~64, Hidden: 192, Est. Total FC Input: 192
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~64, Hidden: 192, Est. Total FC Input: 192
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~64, Hidden: 192, Est. Total FC Input: 192
+SCOFNA V4 Initialized: FFT Features/Ch: ~64, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+SCOFNA V4 Initialized: FFT Features/Ch: ~64, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+SCOFNA V4 Initialized: FFT Features/Ch: ~64, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+SCOFNA V4 Initialized: FFT Features/Ch: ~64, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+Epoch 10: TrainLoss=0.4970, ValLoss=0.6810, ValAcc=0.5300
+Epoch 10: TrainLoss=0.4970, ValLoss=0.6810, ValAcc=0.5300
+Epoch 10: TrainLoss=0.4955, ValLoss=0.6873, ValAcc=0.5200
+Epoch 10: TrainLoss=0.4955, ValLoss=0.6873, ValAcc=0.5200
+Epoch 20: TrainLoss=0.3980, ValLoss=0.6787, ValAcc=0.5800
+Epoch 20: TrainLoss=0.3980, ValLoss=0.6787, ValAcc=0.5800
+Epoch 20: TrainLoss=0.4048, ValLoss=0.6752, ValAcc=0.5700
+Epoch 20: TrainLoss=0.4048, ValLoss=0.6752, ValAcc=0.5700
+--- Evaluation: StandardNN_Simple_BN_V2 ---
+--- Evaluation: StandardNN_Simple_BN_V2 ---
+--- Evaluation: StandardNN_Simple_BN_V2 ---
+--- Evaluation: StandardNN_Simple_BN_V2 ---
+Test Accuracy: 0.5000
+Test Accuracy: 0.5000
+Test Accuracy: 0.5380
+Test Accuracy: 0.5380
+Test RMSE: 0.7071
+Test RMSE: 0.7071
+Test RMSE: 0.6797
+Test RMSE: 0.6797
+Test MAE: 0.5000
+Test MAE: 0.5000
+Test MAE: 0.4620
+Test MAE: 0.4620
+Initialized/Resized FFTLayer frequency weights to size: 257
+Initialized/Resized FFTLayer frequency weights to size: 257
+Initialized/Resized FFTLayer frequency weights to size: 257
+Initialized/Resized FFTLayer frequency weights to size: 257
+Epoch 10: TrainLoss=0.6859, ValLoss=0.6967, ValAcc=0.5340
+Epoch 10: TrainLoss=0.6859, ValLoss=0.6967, ValAcc=0.5340
+Epoch 10: TrainLoss=0.6699, ValLoss=0.6986, ValAcc=0.5280
+Epoch 10: TrainLoss=0.6699, ValLoss=0.6986, ValAcc=0.5280
+Epoch 20: TrainLoss=0.6455, ValLoss=0.6472, ValAcc=0.6300
+Epoch 20: TrainLoss=0.6455, ValLoss=0.6472, ValAcc=0.6300
+Epoch 20: TrainLoss=0.6752, ValLoss=0.6474, ValAcc=0.6200
+Epoch 20: TrainLoss=0.6752, ValLoss=0.6474, ValAcc=0.6200
+--- Evaluation: FENS_MLP_V4 ---
+--- Evaluation: FENS_MLP_V4 ---
+--- Evaluation: FENS_MLP_V4 ---
+--- Evaluation: FENS_MLP_V4 ---
+Test Accuracy: 0.5560
+Test Accuracy: 0.5560
+Test RMSE: 0.6663
+Test RMSE: 0.6663
+Test Accuracy: 0.5440
+Test Accuracy: 0.5440
+Test MAE: 0.4440
+Test MAE: 0.4440
+Test RMSE: 0.6753
+Test RMSE: 0.6753
+Test MAE: 0.4560
+Test MAE: 0.4560
+Initialized/Resized FFTLayer frequency weights to size: 257
+Initialized/Resized FFTLayer frequency weights to size: 257
+Initialized/Resized FFTLayer frequency weights to size: 257
+Initialized/Resized FFTLayer frequency weights to size: 257
+Epoch 10: TrainLoss=0.6930, ValLoss=0.6907, ValAcc=0.5000
+Epoch 10: TrainLoss=0.6930, ValLoss=0.6907, ValAcc=0.5000
+Epoch 10: TrainLoss=0.7301, ValLoss=0.6942, ValAcc=0.5000
+Epoch 10: TrainLoss=0.7301, ValLoss=0.6942, ValAcc=0.5000
+Epoch 20: TrainLoss=0.7170, ValLoss=0.6946, ValAcc=0.4980
+Epoch 20: TrainLoss=0.7170, ValLoss=0.6946, ValAcc=0.4980
+Epoch 20: TrainLoss=0.6773, ValLoss=0.6845, ValAcc=0.5480
+Epoch 20: TrainLoss=0.6773, ValLoss=0.6845, ValAcc=0.5480
+--- Evaluation: SCOFNA_Conv_V4 ---
+--- Evaluation: SCOFNA_Conv_V4 ---
+Test Accuracy: 0.5160
+Test Accuracy: 0.5160
+Test RMSE: 0.6957
+Test RMSE: 0.6957
+Test MAE: 0.4840
+Test MAE: 0.4840
+--- Evaluation: SCOFNA_Conv_V4 ---
+--- Evaluation: SCOFNA_Conv_V4 ---
+Test Accuracy: 0.4980
+Test Accuracy: 0.4980
+Test RMSE: 0.7085
+Test RMSE: 0.7085
+Test MAE: 0.5020
+Test MAE: 0.5020
+########## RUN 1 - ECG ##########
+SNN_V2          | Acc: 0.5190±0.0190 | RMSE: 0.6934±0.0137 | MAE: 0.4810±0.0190
+FENS_MLP_V4     | Acc: 0.5500±0.0060 | RMSE: 0.6708±0.0045 | MAE: 0.4500±0.0060
+SCOFNA_Conv_V4  | Acc: 0.5070±0.0090 | RMSE: 0.7021±0.0064 | MAE: 0.4930±0.0090
+Generating Realistic Multi-Channel Audio Data V4 (2 channels, 1024 timesteps)...
+Generating Realistic Multi-Channel Audio Data V4 (2 channels, 1024 timesteps)...
+Scaling data per channel...
+Scaling data per channel...
+Scaling complete.
+Scaling complete.
+Audio Data Shapes: Train=(700, 2, 1024), Val=(150, 2, 1024), Test=(150, 2, 1024)
+Audio Data Shapes: Train=(700, 2, 1024), Val=(150, 2, 1024), Test=(150, 2, 1024)
+SNN V2 Initialized: Input: 2048, HiddenSizes: 576/384/192, Output: 2
+SNN V2 Initialized: Input: 2048, HiddenSizes: 576/384/192, Output: 2
+SNN V2 Initialized: Input: 2048, HiddenSizes: 576/384/192, Output: 2
+SNN V2 Initialized: Input: 2048, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~64, Hidden: 192, Est. Total FC Input: 128
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~64, Hidden: 192, Est. Total FC Input: 128
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~64, Hidden: 192, Est. Total FC Input: 128
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~64, Hidden: 192, Est. Total FC Input: 128
+SCOFNA V4 Initialized: FFT Features/Ch: ~64, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+SCOFNA V4 Initialized: FFT Features/Ch: ~64, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+SCOFNA V4 Initialized: FFT Features/Ch: ~64, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+SCOFNA V4 Initialized: FFT Features/Ch: ~64, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+Epoch 10: TrainLoss=0.3459, ValLoss=0.6403, ValAcc=0.6500
+Epoch 10: TrainLoss=0.3459, ValLoss=0.6403, ValAcc=0.6500
+Epoch 10: TrainLoss=0.3619, ValLoss=0.6362, ValAcc=0.6200
+Epoch 10: TrainLoss=0.3619, ValLoss=0.6362, ValAcc=0.6200
+Epoch 20: TrainLoss=0.2399, ValLoss=0.5825, ValAcc=0.7200
+Epoch 20: TrainLoss=0.2399, ValLoss=0.5825, ValAcc=0.7200
+Epoch 20: TrainLoss=0.2204, ValLoss=0.5946, ValAcc=0.6800
+Epoch 20: TrainLoss=0.2204, ValLoss=0.5946, ValAcc=0.6800
+--- Evaluation: StandardNN_Simple_BN_V2 ---
+--- Evaluation: StandardNN_Simple_BN_V2 ---
+Test Accuracy: 0.6560
+Test Accuracy: 0.6560
+Test RMSE: 0.5865
+Test RMSE: 0.5865
+Test MAE: 0.3440
+Test MAE: 0.3440
+--- Evaluation: StandardNN_Simple_BN_V2 ---
+--- Evaluation: StandardNN_Simple_BN_V2 ---
+Test Accuracy: 0.6600
+Test Accuracy: 0.6600
+Test RMSE: 0.5831
+Test RMSE: 0.5831
+Test MAE: 0.3400
+Test MAE: 0.3400
+Initialized/Resized FFTLayer frequency weights to size: 513
+Initialized/Resized FFTLayer frequency weights to size: 513
+Initialized/Resized FFTLayer frequency weights to size: 513
+Initialized/Resized FFTLayer frequency weights to size: 513
+Epoch 10: TrainLoss=0.5441, ValLoss=0.4656, ValAcc=0.8520
+Epoch 10: TrainLoss=0.5441, ValLoss=0.4656, ValAcc=0.8520
+Epoch 10: TrainLoss=0.5691, ValLoss=0.5174, ValAcc=0.8280
+Epoch 10: TrainLoss=0.5691, ValLoss=0.5174, ValAcc=0.8280
+Epoch 20: TrainLoss=0.5155, ValLoss=0.4618, ValAcc=0.8280
+Epoch 20: TrainLoss=0.5155, ValLoss=0.4618, ValAcc=0.8280
+Epoch 20: TrainLoss=0.5259, ValLoss=0.5018, ValAcc=0.8680
+Epoch 20: TrainLoss=0.5259, ValLoss=0.5018, ValAcc=0.8680
+--- Evaluation: FENS_MLP_V4 ---
+--- Evaluation: FENS_MLP_V4 ---
+--- Evaluation: FENS_MLP_V4 ---
+--- Evaluation: FENS_MLP_V4 ---
+Test Accuracy: 0.8120
+Test Accuracy: 0.8120
+Test Accuracy: 0.8480
+Test Accuracy: 0.8480
+Test RMSE: 0.4336
+Test RMSE: 0.4336
+Test RMSE: 0.3899
+Test RMSE: 0.3899
+Test MAE: 0.1880
+Test MAE: 0.1880
+Test MAE: 0.1520
+Test MAE: 0.1520
+Initialized/Resized FFTLayer frequency weights to size: 513
+Initialized/Resized FFTLayer frequency weights to size: 513
+Initialized/Resized FFTLayer frequency weights to size: 513
+Initialized/Resized FFTLayer frequency weights to size: 513
+Epoch 10: TrainLoss=0.3475, ValLoss=0.6182, ValAcc=0.8460
+Epoch 10: TrainLoss=0.3475, ValLoss=0.6182, ValAcc=0.8460
+Epoch 10: TrainLoss=0.3053, ValLoss=0.6159, ValAcc=0.6240
+Epoch 10: TrainLoss=0.3053, ValLoss=0.6159, ValAcc=0.6240
+Epoch 20: TrainLoss=0.3157, ValLoss=0.5636, ValAcc=0.8740
+Epoch 20: TrainLoss=0.3157, ValLoss=0.5636, ValAcc=0.8740
+Epoch 20: TrainLoss=0.2820, ValLoss=0.5355, ValAcc=0.8220
+Epoch 20: TrainLoss=0.2820, ValLoss=0.5355, ValAcc=0.8220
+--- Evaluation: SCOFNA_Conv_V4 ---
+--- Evaluation: SCOFNA_Conv_V4 ---
+--- Evaluation: SCOFNA_Conv_V4 ---
+--- Evaluation: SCOFNA_Conv_V4 ---
+Test Accuracy: 0.8740
+Test Accuracy: 0.8740
+Test Accuracy: 0.7900
+Test Accuracy: 0.7900
+Test RMSE: 0.3550
+Test RMSE: 0.3550
+Test RMSE: 0.4583
+Test RMSE: 0.4583
+Test MAE: 0.1260
+Test MAE: 0.1260
+Test MAE: 0.2100
+Test MAE: 0.2100
+########## RUN 1 - Audio ##########
+SNN_V2          | Acc: 0.6580±0.0020 | RMSE: 0.5848±0.0017 | MAE: 0.3420±0.0020
+FENS_MLP_V4     | Acc: 0.8300±0.0180 | RMSE: 0.4117±0.0219 | MAE: 0.1700±0.0180
+SCOFNA_Conv_V4  | Acc: 0.8320±0.0420 | RMSE: 0.4066±0.0516 | MAE: 0.1680±0.0420
+Saved stacked plot: /home/zoy/Desktop/Pracres/results/20250425_142550/EEG/EEG_stacked_signals.png
+Saved stacked plot: /home/zoy/Desktop/Pracres/results/20250425_142550/EEG/EEG_stacked_signals.png
+Saved stacked plot: /home/zoy/Desktop/Pracres/results/20250425_142550/EEG/ECG/ECG_stacked_signals.png
+Saved stacked plot: /home/zoy/Desktop/Pracres/results/20250425_142550/EEG/ECG/ECG_stacked_signals.png
+Saved stacked plot: /home/zoy/Desktop/Pracres/results/20250425_142550/EEG/ECG/Audio/Audio_stacked_signals.png
+Saved stacked plot: /home/zoy/Desktop/Pracres/results/20250425_142550/EEG/ECG/Audio/Audio_stacked_signals.png
+✅ Complete
