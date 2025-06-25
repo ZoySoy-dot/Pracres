@@ -1,0 +1,727 @@
+
+Generating Synthetic Multi-Channel EEG Data V4 (3 channels, 256 timesteps)...
+Scaling data per channel...
+Scaling complete.
+EEG Data Shapes: Train=(700, 3, 256), Val=(150, 3, 256), Test=(150, 3, 256)
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.5317 ValLoss=0.6622 ValAcc=0.6300
+Epoch 20: TrainLoss=0.2629 ValLoss=0.5660 ValAcc=0.6700
+Epoch 30: TrainLoss=0.1006 ValLoss=0.4973 ValAcc=0.7500
+Epoch 40: TrainLoss=0.0474 ValLoss=0.4660 ValAcc=0.7700
+Epoch 50: TrainLoss=0.0358 ValLoss=0.4325 ValAcc=0.8100
+Epoch 60: TrainLoss=0.0274 ValLoss=0.4157 ValAcc=0.8200
+Epoch 70: TrainLoss=0.0253 ValLoss=0.4080 ValAcc=0.8200
+Epoch 80: TrainLoss=0.0253 ValLoss=0.4047 ValAcc=0.8200
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8180
+Test RMSE: 0.4266
+Test MAE: 0.1820
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6019 ValLoss=0.6233 ValAcc=0.5600
+Epoch 20: TrainLoss=0.5169 ValLoss=0.5421 ValAcc=0.6200
+Epoch 30: TrainLoss=0.4617 ValLoss=0.4582 ValAcc=0.7900
+Epoch 40: TrainLoss=0.4078 ValLoss=0.3946 ValAcc=0.8900
+Epoch 50: TrainLoss=0.3654 ValLoss=0.3527 ValAcc=0.9320
+Epoch 60: TrainLoss=0.3579 ValLoss=0.3287 ValAcc=0.9440
+Epoch 70: TrainLoss=0.3336 ValLoss=0.3172 ValAcc=0.9460
+Epoch 80: TrainLoss=0.3331 ValLoss=0.3132 ValAcc=0.9480
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9300
+Test RMSE: 0.2646
+Test MAE: 0.0700
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.3000 ValLoss=0.6024 ValAcc=0.6920
+Epoch 20: TrainLoss=0.2094 ValLoss=0.4089 ValAcc=0.9280
+Epoch 30: TrainLoss=0.1649 ValLoss=0.2685 ValAcc=0.9480
+Epoch 40: TrainLoss=0.1480 ValLoss=0.1873 ValAcc=0.9660
+Epoch 50: TrainLoss=0.1460 ValLoss=0.1507 ValAcc=0.9660
+Epoch 60: TrainLoss=0.1361 ValLoss=0.1313 ValAcc=0.9680
+Epoch 70: TrainLoss=0.1257 ValLoss=0.1232 ValAcc=0.9700
+Epoch 80: TrainLoss=0.1236 ValLoss=0.1199 ValAcc=0.9700
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9580
+Test RMSE: 0.2049
+Test MAE: 0.0420
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/comparison_metrics/EEG_run1_fold1_comparison_metrics.png
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.5145 ValLoss=0.6747 ValAcc=0.6000
+Epoch 20: TrainLoss=0.2492 ValLoss=0.6001 ValAcc=0.6800
+Epoch 30: TrainLoss=0.0932 ValLoss=0.5274 ValAcc=0.6700
+Epoch 40: TrainLoss=0.0409 ValLoss=0.4824 ValAcc=0.7300
+Epoch 50: TrainLoss=0.0268 ValLoss=0.4484 ValAcc=0.7500
+Epoch 60: TrainLoss=0.0241 ValLoss=0.4272 ValAcc=0.7700
+Epoch 70: TrainLoss=0.0239 ValLoss=0.4150 ValAcc=0.8000
+Epoch 80: TrainLoss=0.0189 ValLoss=0.4120 ValAcc=0.8000
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.7940
+Test RMSE: 0.4539
+Test MAE: 0.2060
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6164 ValLoss=0.5793 ValAcc=0.6280
+Epoch 20: TrainLoss=0.4793 ValLoss=0.4923 ValAcc=0.7220
+Epoch 30: TrainLoss=0.4128 ValLoss=0.4145 ValAcc=0.8440
+Epoch 40: TrainLoss=0.3576 ValLoss=0.3521 ValAcc=0.9160
+Epoch 50: TrainLoss=0.3321 ValLoss=0.3152 ValAcc=0.9460
+Epoch 60: TrainLoss=0.3222 ValLoss=0.2946 ValAcc=0.9480
+Epoch 70: TrainLoss=0.3031 ValLoss=0.2852 ValAcc=0.9500
+Epoch 80: TrainLoss=0.3035 ValLoss=0.2819 ValAcc=0.9500
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9140
+Test RMSE: 0.2933
+Test MAE: 0.0860
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.3855 ValLoss=0.6669 ValAcc=0.5240
+Epoch 20: TrainLoss=0.2817 ValLoss=0.5774 ValAcc=0.7160
+Epoch 30: TrainLoss=0.2334 ValLoss=0.4168 ValAcc=0.8640
+Epoch 40: TrainLoss=0.2071 ValLoss=0.2873 ValAcc=0.9140
+Epoch 50: TrainLoss=0.1887 ValLoss=0.2152 ValAcc=0.9320
+Epoch 60: TrainLoss=0.1919 ValLoss=0.1843 ValAcc=0.9420
+Epoch 70: TrainLoss=0.1650 ValLoss=0.1686 ValAcc=0.9460
+Epoch 80: TrainLoss=0.1739 ValLoss=0.1629 ValAcc=0.9460
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9220
+Test RMSE: 0.2793
+Test MAE: 0.0780
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/comparison_metrics/EEG_run1_fold2_comparison_metrics.png
+Saved confusion matrix: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/EEG_SNN_V2_confusion_matrix.png
+Saved confusion matrix: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/EEG_FENS_MLP_V4_confusion_matrix.png
+Saved confusion matrix: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/EEG_SCOFNA_Conv_V4_confusion_matrix.png
+
+Generating Synthetic Multi-Channel EEG Data V4 (3 channels, 256 timesteps)...
+Scaling data per channel...
+Scaling complete.
+EEG Data Shapes: Train=(700, 3, 256), Val=(150, 3, 256), Test=(150, 3, 256)
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.5136 ValLoss=0.6618 ValAcc=0.6125
+Epoch 20: TrainLoss=0.2449 ValLoss=0.5742 ValAcc=0.7000
+Epoch 30: TrainLoss=0.0935 ValLoss=0.4731 ValAcc=0.7812
+Epoch 40: TrainLoss=0.0508 ValLoss=0.4044 ValAcc=0.8250
+Epoch 50: TrainLoss=0.0328 ValLoss=0.3600 ValAcc=0.8375
+Epoch 60: TrainLoss=0.0245 ValLoss=0.3387 ValAcc=0.8812
+Epoch 70: TrainLoss=0.0231 ValLoss=0.3315 ValAcc=0.8750
+Epoch 80: TrainLoss=0.0264 ValLoss=0.3303 ValAcc=0.8750
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8450
+Test RMSE: 0.3937
+Test MAE: 0.1550
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6481 ValLoss=0.6237 ValAcc=0.5988
+Epoch 20: TrainLoss=0.5395 ValLoss=0.5648 ValAcc=0.5875
+Epoch 30: TrainLoss=0.4637 ValLoss=0.4856 ValAcc=0.7262
+Epoch 40: TrainLoss=0.4118 ValLoss=0.4173 ValAcc=0.8725
+Epoch 50: TrainLoss=0.3898 ValLoss=0.3752 ValAcc=0.9175
+Epoch 60: TrainLoss=0.3797 ValLoss=0.3517 ValAcc=0.9313
+Epoch 70: TrainLoss=0.3687 ValLoss=0.3415 ValAcc=0.9337
+Epoch 80: TrainLoss=0.3763 ValLoss=0.3380 ValAcc=0.9350
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8650
+Test RMSE: 0.3674
+Test MAE: 0.1350
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.3618 ValLoss=0.6525 ValAcc=0.7887
+Epoch 20: TrainLoss=0.2239 ValLoss=0.4937 ValAcc=0.8500
+Epoch 30: TrainLoss=0.1745 ValLoss=0.3202 ValAcc=0.9287
+Epoch 40: TrainLoss=0.1469 ValLoss=0.2031 ValAcc=0.9537
+Epoch 50: TrainLoss=0.1437 ValLoss=0.1538 ValAcc=0.9663
+Epoch 60: TrainLoss=0.1321 ValLoss=0.1325 ValAcc=0.9712
+Epoch 70: TrainLoss=0.1256 ValLoss=0.1223 ValAcc=0.9738
+Epoch 80: TrainLoss=0.1221 ValLoss=0.1192 ValAcc=0.9738
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9600
+Test RMSE: 0.2000
+Test MAE: 0.0400
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/comparison_metrics/EEG_run1_fold1_comparison_metrics.png
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.5196 ValLoss=0.6694 ValAcc=0.5875
+Epoch 20: TrainLoss=0.2750 ValLoss=0.5776 ValAcc=0.6813
+Epoch 30: TrainLoss=0.1057 ValLoss=0.4945 ValAcc=0.7312
+Epoch 40: TrainLoss=0.0536 ValLoss=0.4316 ValAcc=0.7875
+Epoch 50: TrainLoss=0.0372 ValLoss=0.3699 ValAcc=0.8187
+Epoch 60: TrainLoss=0.0290 ValLoss=0.3375 ValAcc=0.8250
+Epoch 70: TrainLoss=0.0321 ValLoss=0.3253 ValAcc=0.8375
+Epoch 80: TrainLoss=0.0302 ValLoss=0.3214 ValAcc=0.8375
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9400
+Test RMSE: 0.2449
+Test MAE: 0.0600
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6009 ValLoss=0.5956 ValAcc=0.5763
+Epoch 20: TrainLoss=0.5141 ValLoss=0.5425 ValAcc=0.5900
+Epoch 30: TrainLoss=0.4348 ValLoss=0.4579 ValAcc=0.7688
+Epoch 40: TrainLoss=0.3905 ValLoss=0.3940 ValAcc=0.8788
+Epoch 50: TrainLoss=0.3560 ValLoss=0.3526 ValAcc=0.9125
+Epoch 60: TrainLoss=0.3512 ValLoss=0.3281 ValAcc=0.9287
+Epoch 70: TrainLoss=0.3336 ValLoss=0.3173 ValAcc=0.9350
+Epoch 80: TrainLoss=0.3347 ValLoss=0.3138 ValAcc=0.9363
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9600
+Test RMSE: 0.2000
+Test MAE: 0.0400
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6336 ValLoss=0.6901 ValAcc=0.5000
+Epoch 20: TrainLoss=0.5478 ValLoss=0.7186 ValAcc=0.5000
+Epoch 30: TrainLoss=0.4995 ValLoss=0.7862 ValAcc=0.5025
+Epoch 40: TrainLoss=0.4527 ValLoss=0.7379 ValAcc=0.5363
+Epoch 50: TrainLoss=0.4271 ValLoss=0.5760 ValAcc=0.6850
+Epoch 60: TrainLoss=0.4150 ValLoss=0.4598 ValAcc=0.7750
+Epoch 70: TrainLoss=0.4085 ValLoss=0.4105 ValAcc=0.8225
+Epoch 80: TrainLoss=0.4025 ValLoss=0.3917 ValAcc=0.8413
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8000
+Test RMSE: 0.4472
+Test MAE: 0.2000
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/comparison_metrics/EEG_run1_fold2_comparison_metrics.png
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.5207 ValLoss=0.6549 ValAcc=0.6438
+Epoch 20: TrainLoss=0.2587 ValLoss=0.5238 ValAcc=0.7875
+Epoch 30: TrainLoss=0.1051 ValLoss=0.3908 ValAcc=0.8562
+Epoch 40: TrainLoss=0.0540 ValLoss=0.2977 ValAcc=0.8875
+Epoch 50: TrainLoss=0.0319 ValLoss=0.2651 ValAcc=0.8750
+Epoch 60: TrainLoss=0.0295 ValLoss=0.2476 ValAcc=0.8812
+Epoch 70: TrainLoss=0.0276 ValLoss=0.2434 ValAcc=0.9000
+Epoch 80: TrainLoss=0.0265 ValLoss=0.2424 ValAcc=0.8938
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9000
+Test RMSE: 0.3162
+Test MAE: 0.1000
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6295 ValLoss=0.6303 ValAcc=0.5375
+Epoch 20: TrainLoss=0.5184 ValLoss=0.5539 ValAcc=0.5850
+Epoch 30: TrainLoss=0.4599 ValLoss=0.4737 ValAcc=0.7575
+Epoch 40: TrainLoss=0.4107 ValLoss=0.4071 ValAcc=0.8912
+Epoch 50: TrainLoss=0.3693 ValLoss=0.3646 ValAcc=0.9337
+Epoch 60: TrainLoss=0.3786 ValLoss=0.3412 ValAcc=0.9513
+Epoch 70: TrainLoss=0.3557 ValLoss=0.3302 ValAcc=0.9500
+Epoch 80: TrainLoss=0.3569 ValLoss=0.3263 ValAcc=0.9487
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9050
+Test RMSE: 0.3082
+Test MAE: 0.0950
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.2937 ValLoss=0.6328 ValAcc=0.7050
+Epoch 20: TrainLoss=0.2208 ValLoss=0.4485 ValAcc=0.9263
+Epoch 30: TrainLoss=0.1972 ValLoss=0.2885 ValAcc=0.9300
+Epoch 40: TrainLoss=0.1770 ValLoss=0.2109 ValAcc=0.9475
+Epoch 50: TrainLoss=0.1669 ValLoss=0.1787 ValAcc=0.9525
+Epoch 60: TrainLoss=0.1578 ValLoss=0.1638 ValAcc=0.9587
+Epoch 70: TrainLoss=0.1605 ValLoss=0.1548 ValAcc=0.9600
+Epoch 80: TrainLoss=0.1638 ValLoss=0.1503 ValAcc=0.9600
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9450
+Test RMSE: 0.2345
+Test MAE: 0.0550
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/comparison_metrics/EEG_run1_fold3_comparison_metrics.png
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.4939 ValLoss=0.6514 ValAcc=0.7000
+Epoch 20: TrainLoss=0.2476 ValLoss=0.5456 ValAcc=0.7688
+Epoch 30: TrainLoss=0.1011 ValLoss=0.4464 ValAcc=0.8000
+Epoch 40: TrainLoss=0.0528 ValLoss=0.3582 ValAcc=0.8438
+Epoch 50: TrainLoss=0.0357 ValLoss=0.3281 ValAcc=0.8562
+Epoch 60: TrainLoss=0.0262 ValLoss=0.3037 ValAcc=0.8625
+Epoch 70: TrainLoss=0.0245 ValLoss=0.2942 ValAcc=0.8625
+Epoch 80: TrainLoss=0.0245 ValLoss=0.2923 ValAcc=0.8688
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8500
+Test RMSE: 0.3873
+Test MAE: 0.1500
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6473 ValLoss=0.6699 ValAcc=0.5138
+Epoch 20: TrainLoss=0.5154 ValLoss=0.5584 ValAcc=0.5863
+Epoch 30: TrainLoss=0.4618 ValLoss=0.4688 ValAcc=0.7550
+Epoch 40: TrainLoss=0.3921 ValLoss=0.4033 ValAcc=0.8800
+Epoch 50: TrainLoss=0.3659 ValLoss=0.3596 ValAcc=0.9125
+Epoch 60: TrainLoss=0.3536 ValLoss=0.3362 ValAcc=0.9313
+Epoch 70: TrainLoss=0.3573 ValLoss=0.3251 ValAcc=0.9325
+Epoch 80: TrainLoss=0.3430 ValLoss=0.3214 ValAcc=0.9350
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9450
+Test RMSE: 0.2345
+Test MAE: 0.0550
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6737 ValLoss=0.6920 ValAcc=0.5000
+Epoch 20: TrainLoss=0.6186 ValLoss=0.6885 ValAcc=0.5100
+Epoch 30: TrainLoss=0.5830 ValLoss=0.6688 ValAcc=0.5288
+Epoch 40: TrainLoss=0.5320 ValLoss=0.6085 ValAcc=0.6713
+Epoch 50: TrainLoss=0.5265 ValLoss=0.5447 ValAcc=0.7550
+Epoch 60: TrainLoss=0.4964 ValLoss=0.5024 ValAcc=0.7775
+Epoch 70: TrainLoss=0.4922 ValLoss=0.4775 ValAcc=0.7825
+Epoch 80: TrainLoss=0.4796 ValLoss=0.4659 ValAcc=0.7963
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.7450
+Test RMSE: 0.5050
+Test MAE: 0.2550
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/comparison_metrics/EEG_run1_fold4_comparison_metrics.png
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.5426 ValLoss=0.6524 ValAcc=0.5813
+Epoch 20: TrainLoss=0.2656 ValLoss=0.5505 ValAcc=0.6937
+Epoch 30: TrainLoss=0.1027 ValLoss=0.4397 ValAcc=0.8063
+Epoch 40: TrainLoss=0.0589 ValLoss=0.3602 ValAcc=0.8688
+Epoch 50: TrainLoss=0.0378 ValLoss=0.2985 ValAcc=0.9000
+Epoch 60: TrainLoss=0.0323 ValLoss=0.2698 ValAcc=0.9000
+Epoch 70: TrainLoss=0.0345 ValLoss=0.2662 ValAcc=0.8750
+Epoch 80: TrainLoss=0.0321 ValLoss=0.2651 ValAcc=0.8812
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9150
+Test RMSE: 0.2915
+Test MAE: 0.0850
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6334 ValLoss=0.6480 ValAcc=0.5450
+Epoch 20: TrainLoss=0.5269 ValLoss=0.5705 ValAcc=0.5700
+Epoch 30: TrainLoss=0.4721 ValLoss=0.4869 ValAcc=0.7312
+Epoch 40: TrainLoss=0.4269 ValLoss=0.4225 ValAcc=0.8400
+Epoch 50: TrainLoss=0.3916 ValLoss=0.3789 ValAcc=0.9050
+Epoch 60: TrainLoss=0.3806 ValLoss=0.3548 ValAcc=0.9287
+Epoch 70: TrainLoss=0.3576 ValLoss=0.3430 ValAcc=0.9325
+Epoch 80: TrainLoss=0.3686 ValLoss=0.3383 ValAcc=0.9313
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9400
+Test RMSE: 0.2449
+Test MAE: 0.0600
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.3769 ValLoss=0.6530 ValAcc=0.8300
+Epoch 20: TrainLoss=0.3016 ValLoss=0.5350 ValAcc=0.8550
+Epoch 30: TrainLoss=0.2598 ValLoss=0.3875 ValAcc=0.8850
+Epoch 40: TrainLoss=0.2529 ValLoss=0.2897 ValAcc=0.9038
+Epoch 50: TrainLoss=0.2414 ValLoss=0.2479 ValAcc=0.9225
+Epoch 60: TrainLoss=0.2256 ValLoss=0.2282 ValAcc=0.9287
+Epoch 70: TrainLoss=0.2287 ValLoss=0.2195 ValAcc=0.9375
+Epoch 80: TrainLoss=0.2243 ValLoss=0.2157 ValAcc=0.9387
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9500
+Test RMSE: 0.2236
+Test MAE: 0.0500
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/comparison_metrics/EEG_run1_fold5_comparison_metrics.png
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.5436 ValLoss=0.6621 ValAcc=0.6000
+Epoch 20: TrainLoss=0.2878 ValLoss=0.5641 ValAcc=0.7125
+Epoch 30: TrainLoss=0.1088 ValLoss=0.4517 ValAcc=0.7812
+Epoch 40: TrainLoss=0.0552 ValLoss=0.3555 ValAcc=0.8250
+Epoch 50: TrainLoss=0.0393 ValLoss=0.3012 ValAcc=0.8750
+Epoch 60: TrainLoss=0.0309 ValLoss=0.2855 ValAcc=0.8938
+Epoch 70: TrainLoss=0.0307 ValLoss=0.2826 ValAcc=0.8938
+Epoch 80: TrainLoss=0.0304 ValLoss=0.2826 ValAcc=0.9000
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8550
+Test RMSE: 0.3808
+Test MAE: 0.1450
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6469 ValLoss=0.6356 ValAcc=0.5737
+Epoch 20: TrainLoss=0.5658 ValLoss=0.5726 ValAcc=0.5813
+Epoch 30: TrainLoss=0.4836 ValLoss=0.5039 ValAcc=0.7238
+Epoch 40: TrainLoss=0.4325 ValLoss=0.4421 ValAcc=0.8525
+Epoch 50: TrainLoss=0.3927 ValLoss=0.3981 ValAcc=0.9012
+Epoch 60: TrainLoss=0.3950 ValLoss=0.3734 ValAcc=0.9300
+Epoch 70: TrainLoss=0.3777 ValLoss=0.3620 ValAcc=0.9387
+Epoch 80: TrainLoss=0.3866 ValLoss=0.3581 ValAcc=0.9375
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8900
+Test RMSE: 0.3317
+Test MAE: 0.1100
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.3312 ValLoss=0.6314 ValAcc=0.8688
+Epoch 20: TrainLoss=0.2313 ValLoss=0.4888 ValAcc=0.8725
+Epoch 30: TrainLoss=0.1970 ValLoss=0.3257 ValAcc=0.9137
+Epoch 40: TrainLoss=0.1653 ValLoss=0.2266 ValAcc=0.9413
+Epoch 50: TrainLoss=0.1518 ValLoss=0.1803 ValAcc=0.9537
+Epoch 60: TrainLoss=0.1417 ValLoss=0.1503 ValAcc=0.9688
+Epoch 70: TrainLoss=0.1405 ValLoss=0.1386 ValAcc=0.9688
+Epoch 80: TrainLoss=0.1356 ValLoss=0.1339 ValAcc=0.9688
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9350
+Test RMSE: 0.2550
+Test MAE: 0.0650
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/comparison_metrics/EEG_run2_fold1_comparison_metrics.png
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.5235 ValLoss=0.6709 ValAcc=0.5500
+Epoch 20: TrainLoss=0.2659 ValLoss=0.5916 ValAcc=0.6625
+Epoch 30: TrainLoss=0.1153 ValLoss=0.4693 ValAcc=0.8000
+Epoch 40: TrainLoss=0.0592 ValLoss=0.3869 ValAcc=0.7875
+Epoch 50: TrainLoss=0.0443 ValLoss=0.3341 ValAcc=0.8187
+Epoch 60: TrainLoss=0.0385 ValLoss=0.3184 ValAcc=0.8250
+Epoch 70: TrainLoss=0.0348 ValLoss=0.3162 ValAcc=0.8313
+Epoch 80: TrainLoss=0.0327 ValLoss=0.3144 ValAcc=0.8500
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9150
+Test RMSE: 0.2915
+Test MAE: 0.0850
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.5895 ValLoss=0.6136 ValAcc=0.6075
+Epoch 20: TrainLoss=0.4891 ValLoss=0.5382 ValAcc=0.6350
+Epoch 30: TrainLoss=0.4486 ValLoss=0.4479 ValAcc=0.8063
+Epoch 40: TrainLoss=0.3946 ValLoss=0.3843 ValAcc=0.8900
+Epoch 50: TrainLoss=0.3468 ValLoss=0.3466 ValAcc=0.9213
+Epoch 60: TrainLoss=0.3467 ValLoss=0.3246 ValAcc=0.9325
+Epoch 70: TrainLoss=0.3498 ValLoss=0.3143 ValAcc=0.9325
+Epoch 80: TrainLoss=0.3368 ValLoss=0.3108 ValAcc=0.9313
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9450
+Test RMSE: 0.2345
+Test MAE: 0.0550
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.3603 ValLoss=0.6710 ValAcc=0.6675
+Epoch 20: TrainLoss=0.2388 ValLoss=0.5779 ValAcc=0.7662
+Epoch 30: TrainLoss=0.2008 ValLoss=0.4264 ValAcc=0.8738
+Epoch 40: TrainLoss=0.1795 ValLoss=0.2915 ValAcc=0.9313
+Epoch 50: TrainLoss=0.1692 ValLoss=0.2100 ValAcc=0.9463
+Epoch 60: TrainLoss=0.1678 ValLoss=0.1765 ValAcc=0.9587
+Epoch 70: TrainLoss=0.1661 ValLoss=0.1606 ValAcc=0.9600
+Epoch 80: TrainLoss=0.1617 ValLoss=0.1558 ValAcc=0.9613
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9650
+Test RMSE: 0.1871
+Test MAE: 0.0350
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/comparison_metrics/EEG_run2_fold2_comparison_metrics.png
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.5240 ValLoss=0.6528 ValAcc=0.6375
+Epoch 20: TrainLoss=0.2553 ValLoss=0.5477 ValAcc=0.7375
+Epoch 30: TrainLoss=0.0881 ValLoss=0.4232 ValAcc=0.8187
+Epoch 40: TrainLoss=0.0476 ValLoss=0.3229 ValAcc=0.8875
+Epoch 50: TrainLoss=0.0313 ValLoss=0.2714 ValAcc=0.9062
+Epoch 60: TrainLoss=0.0269 ValLoss=0.2547 ValAcc=0.8875
+Epoch 70: TrainLoss=0.0257 ValLoss=0.2525 ValAcc=0.8875
+Epoch 80: TrainLoss=0.0267 ValLoss=0.2523 ValAcc=0.8812
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8900
+Test RMSE: 0.3317
+Test MAE: 0.1100
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6025 ValLoss=0.5950 ValAcc=0.6088
+Epoch 20: TrainLoss=0.5098 ValLoss=0.5344 ValAcc=0.6275
+Epoch 30: TrainLoss=0.4281 ValLoss=0.4571 ValAcc=0.7850
+Epoch 40: TrainLoss=0.3810 ValLoss=0.3904 ValAcc=0.8950
+Epoch 50: TrainLoss=0.3439 ValLoss=0.3450 ValAcc=0.9350
+Epoch 60: TrainLoss=0.3417 ValLoss=0.3218 ValAcc=0.9500
+Epoch 70: TrainLoss=0.3270 ValLoss=0.3113 ValAcc=0.9550
+Epoch 80: TrainLoss=0.3417 ValLoss=0.3076 ValAcc=0.9537
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9050
+Test RMSE: 0.3082
+Test MAE: 0.0950
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.3389 ValLoss=0.6474 ValAcc=0.7325
+Epoch 20: TrainLoss=0.2170 ValLoss=0.4830 ValAcc=0.9275
+Epoch 30: TrainLoss=0.1679 ValLoss=0.2933 ValAcc=0.9613
+Epoch 40: TrainLoss=0.1350 ValLoss=0.1874 ValAcc=0.9688
+Epoch 50: TrainLoss=0.1210 ValLoss=0.1420 ValAcc=0.9725
+Epoch 60: TrainLoss=0.1222 ValLoss=0.1206 ValAcc=0.9725
+Epoch 70: TrainLoss=0.1123 ValLoss=0.1110 ValAcc=0.9725
+Epoch 80: TrainLoss=0.1163 ValLoss=0.1079 ValAcc=0.9725
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9550
+Test RMSE: 0.2121
+Test MAE: 0.0450
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/comparison_metrics/EEG_run2_fold3_comparison_metrics.png
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.4971 ValLoss=0.6409 ValAcc=0.7250
+Epoch 20: TrainLoss=0.2428 ValLoss=0.5239 ValAcc=0.7500
+Epoch 30: TrainLoss=0.0941 ValLoss=0.4449 ValAcc=0.8250
+Epoch 40: TrainLoss=0.0479 ValLoss=0.3679 ValAcc=0.8875
+Epoch 50: TrainLoss=0.0379 ValLoss=0.3239 ValAcc=0.8875
+Epoch 60: TrainLoss=0.0296 ValLoss=0.3146 ValAcc=0.8875
+Epoch 70: TrainLoss=0.0262 ValLoss=0.3141 ValAcc=0.8875
+Epoch 80: TrainLoss=0.0282 ValLoss=0.3140 ValAcc=0.8812
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8800
+Test RMSE: 0.3464
+Test MAE: 0.1200
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6422 ValLoss=0.6454 ValAcc=0.5400
+Epoch 20: TrainLoss=0.5463 ValLoss=0.5626 ValAcc=0.6150
+Epoch 30: TrainLoss=0.4647 ValLoss=0.4810 ValAcc=0.7775
+Epoch 40: TrainLoss=0.4172 ValLoss=0.4183 ValAcc=0.8738
+Epoch 50: TrainLoss=0.3906 ValLoss=0.3774 ValAcc=0.9125
+Epoch 60: TrainLoss=0.3710 ValLoss=0.3535 ValAcc=0.9275
+Epoch 70: TrainLoss=0.3783 ValLoss=0.3425 ValAcc=0.9337
+Epoch 80: TrainLoss=0.3604 ValLoss=0.3387 ValAcc=0.9325
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9250
+Test RMSE: 0.2739
+Test MAE: 0.0750
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.4023 ValLoss=0.6711 ValAcc=0.7863
+Epoch 20: TrainLoss=0.2565 ValLoss=0.5853 ValAcc=0.7063
+Epoch 30: TrainLoss=0.2003 ValLoss=0.4389 ValAcc=0.8213
+Epoch 40: TrainLoss=0.1715 ValLoss=0.2893 ValAcc=0.9175
+Epoch 50: TrainLoss=0.1668 ValLoss=0.2023 ValAcc=0.9437
+Epoch 60: TrainLoss=0.1552 ValLoss=0.1625 ValAcc=0.9613
+Epoch 70: TrainLoss=0.1485 ValLoss=0.1483 ValAcc=0.9625
+Epoch 80: TrainLoss=0.1518 ValLoss=0.1429 ValAcc=0.9625
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9650
+Test RMSE: 0.1871
+Test MAE: 0.0350
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/comparison_metrics/EEG_run2_fold4_comparison_metrics.png
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.5159 ValLoss=0.6473 ValAcc=0.7063
+Epoch 20: TrainLoss=0.2493 ValLoss=0.5378 ValAcc=0.7625
+Epoch 30: TrainLoss=0.0950 ValLoss=0.4603 ValAcc=0.8063
+Epoch 40: TrainLoss=0.0508 ValLoss=0.3776 ValAcc=0.8500
+Epoch 50: TrainLoss=0.0365 ValLoss=0.3153 ValAcc=0.8812
+Epoch 60: TrainLoss=0.0286 ValLoss=0.2949 ValAcc=0.8875
+Epoch 70: TrainLoss=0.0243 ValLoss=0.2873 ValAcc=0.8875
+Epoch 80: TrainLoss=0.0250 ValLoss=0.2846 ValAcc=0.8938
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8950
+Test RMSE: 0.3240
+Test MAE: 0.1050
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6201 ValLoss=0.6224 ValAcc=0.5337
+Epoch 20: TrainLoss=0.5280 ValLoss=0.5571 ValAcc=0.5737
+Epoch 30: TrainLoss=0.4911 ValLoss=0.4785 ValAcc=0.7675
+Epoch 40: TrainLoss=0.4249 ValLoss=0.4195 ValAcc=0.8825
+Epoch 50: TrainLoss=0.3989 ValLoss=0.3808 ValAcc=0.9187
+Epoch 60: TrainLoss=0.3823 ValLoss=0.3587 ValAcc=0.9337
+Epoch 70: TrainLoss=0.3664 ValLoss=0.3481 ValAcc=0.9363
+Epoch 80: TrainLoss=0.3782 ValLoss=0.3443 ValAcc=0.9375
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9350
+Test RMSE: 0.2550
+Test MAE: 0.0650
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.2300 ValLoss=0.5823 ValAcc=0.9437
+Epoch 20: TrainLoss=0.1775 ValLoss=0.4085 ValAcc=0.9325
+Epoch 30: TrainLoss=0.1585 ValLoss=0.2635 ValAcc=0.9437
+Epoch 40: TrainLoss=0.1403 ValLoss=0.1867 ValAcc=0.9537
+Epoch 50: TrainLoss=0.1203 ValLoss=0.1490 ValAcc=0.9550
+Epoch 60: TrainLoss=0.1105 ValLoss=0.1261 ValAcc=0.9587
+Epoch 70: TrainLoss=0.1200 ValLoss=0.1130 ValAcc=0.9613
+Epoch 80: TrainLoss=0.1131 ValLoss=0.1070 ValAcc=0.9625
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.9800
+Test RMSE: 0.1414
+Test MAE: 0.0200
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_211309/EEG/comparison_metrics/EEG_run2_fold5_comparison_metrics.png
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.5032 ValLoss=0.6557 ValAcc=0.6250
+Epoch 20: TrainLoss=0.2557 ValLoss=0.5607 ValAcc=0.7312
+Epoch 30: TrainLoss=0.0998 ValLoss=0.4305 ValAcc=0.8000
+Epoch 40: TrainLoss=0.0574 ValLoss=0.3434 ValAcc=0.8500
+Epoch 50: TrainLoss=0.0358 ValLoss=0.2963 ValAcc=0.8938
+Epoch 60: TrainLoss=0.0290 ValLoss=0.2892 ValAcc=0.8875
+Epoch 70: TrainLoss=0.0283 ValLoss=0.2877 ValAcc=0.8875
+Epoch 80: TrainLoss=0.0293 ValLoss=0.2873 ValAcc=0.8938
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8400
+Test RMSE: 0.4000
+Test MAE: 0.1600
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.6055 ValLoss=0.5972 ValAcc=0.6000
+Epoch 20: TrainLoss=0.5007 ValLoss=0.5340 ValAcc=0.6362
+Epoch 30: TrainLoss=0.4415 ValLoss=0.4518 ValAcc=0.7850
+Epoch 40: TrainLoss=0.3829 ValLoss=0.3877 ValAcc=0.8788
+Epoch 50: TrainLoss=0.3630 ValLoss=0.3444 ValAcc=0.9263
+Epoch 60: TrainLoss=0.3421 ValLoss=0.3195 ValAcc=0.9387
+Epoch 70: TrainLoss=0.3390 ValLoss=0.3086 ValAcc=0.9450
+Epoch 80: TrainLoss=0.3317 ValLoss=0.3049 ValAcc=0.9463
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8850
+Test RMSE: 0.3391
+Test MAE: 0.1150
+✅ Model compiled for maximum speed
+Initialized/Resized FFTLayer frequency weights to size: 129
+Epoch 10: TrainLoss=0.5232 ValLoss=0.6851 ValAcc=0.7338
+Epoch 20: TrainLoss=0.4067 ValLoss=0.6515 ValAcc=0.5900
+Epoch 30: TrainLoss=0.3548 ValLoss=0.5606 ValAcc=0.7975
+Epoch 40: TrainLoss=0.3078 ValLoss=0.4243 ValAcc=0.8738
+Exception ignored in atexit callback: <function _MultiProcessingDataLoaderIter._clean_up_worker at 0x798a7aed42c0>
+Traceback (most recent call last):
+  File "/home/zoy/.local/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 1598, in _clean_up_worker
+    w.join(timeout=_utils.MP_STATUS_CHECK_INTERVAL)
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 149, in join
+    res = self._popen.wait(timeout)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/popen_fork.py", line 40, in wait
+    if not wait([self.sentinel], timeout):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 1136, in wait
+    ready = selector.select(timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/selectors.py", line 415, in select
+    fd_event_list = self._selector.poll(timeout)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt: 
+Exception in thread Thread-21 (_run_training):
+Traceback (most recent call last):
+  File "/home/zoy/Desktop/Pracres/window.py", line 237, in _run_training
+    run_cv(ds_sel, runs, folds, epochs,
+  File "/home/zoy/Desktop/Pracres/runner.py", line 84, in run_cv
+    res, hist, conf = _run_single_fold(
+                      ^^^^^^^^^^^^^^^^^
+  File "/home/zoy/Desktop/Pracres/runner.py", line 171, in _run_single_fold
+    results, histories, conf_mats = run_fold(
+                                    ^^^^^^^^^
+  File "/home/zoy/Desktop/Pracres/main.py", line 1532, in run_fold
+    trained, history = train_model(
+                       ^^^^^^^^^^^^
+  File "/home/zoy/Desktop/Pracres/main.py", line 732, in train_model
+    epoch_cb(epoch, epochs)
+  File "/home/zoy/Desktop/Pracres/runner.py", line 168, in epoch_cb
+    base_epoch_cb(epoch, total_epochs)
+  File "/home/zoy/Desktop/Pracres/runner.py", line 59, in epoch_cb
+    progress_cb(done, total_tasks)
+  File "/home/zoy/Desktop/Pracres/window.py", line 262, in _update_progress
+    self.after(0, lambda: self.progress.config(value=pct))
+  File "/usr/lib/python3.12/tkinter/__init__.py", line 872, in after
+    name = self._register(callit)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/tkinter/__init__.py", line 1603, in _register
+    self.tk.createcommand(name, f)
+RuntimeError: main thread is not in main loop
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/zoy/Desktop/Pracres/window.py", line 246, in _run_training
+    self._log(f"❌ Error: {e}")
+  File "/home/zoy/Desktop/Pracres/window.py", line 272, in _log
+    self.after(0, append)
+  File "/usr/lib/python3.12/tkinter/__init__.py", line 872, in after
+    name = self._register(callit)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/tkinter/__init__.py", line 1603, in _register
+    self.tk.createcommand(name, f)
+RuntimeError: main thread is not in main loop
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/threading.py", line 1073, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.12/threading.py", line 1010, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/zoy/Desktop/Pracres/window.py", line 249, in _run_training
+    self.start_btn.config(state="normal")
+  File "/usr/lib/python3.12/tkinter/__init__.py", line 1721, in configure
+    return self._configure('configure', cnf, kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/tkinter/__init__.py", line 1711, in _configure
+    self.tk.call(_flatten((self._w, cmd)) + self._options(cnf))
+RuntimeError: main thread is not in main loop
+f._w, cmd)) + self._options(cnf))
+RuntimeError: main thread is not in main loop

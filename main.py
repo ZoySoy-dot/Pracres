@@ -7,12 +7,16 @@ import matplotlib
 matplotlib.use('Agg')  # use a headless-safe backend
 import matplotlib.pyplot as plt
 import seaborn as sns
+from datetime import datetime
+import sys
 
 from torch import nn, optim
 from torch.nn import functional as F
 from torch.utils.data import DataLoader, TensorDataset
 from torch.amp import autocast, GradScaler
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
+import torch._dynamo
+torch._dynamo.config.suppress_errors = True
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -28,28 +32,45 @@ from sklearn.metrics import (
 from joblib import Parallel, delayed
 from typing import Dict, Tuple, List
 from scipy.signal import lfilter
-# Always work relative to the location of the script file
+
+# --- Enable pickle for all np.load calls to avoid “allow_pickle=False” errors ---
+_np_load_old = np.load
+def _np_load(*args, **kwargs):
+    kwargs['allow_pickle'] = True
+    return _np_load_old(*args, **kwargs)
+np.load = _np_load
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-os.chdir(BASE_DIR)  # Set working directory to where the script is
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-print("Saving to:", os.path.abspath("results"))
+os.chdir(BASE_DIR)
+
+# --- create base results folder and per‐run timestamped subfolder ---
+RESULTS_ROOT = os.path.join(BASE_DIR, 'results')
+os.makedirs(RESULTS_ROOT, exist_ok=True)
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+RESULTS_DIR = os.path.join(RESULTS_ROOT, timestamp)
+os.makedirs(RESULTS_DIR, exist_ok=True)
+
+# redirect console prints to a log file
+log_path = os.path.join(RESULTS_DIR, "console.log")
+log_file = open(log_path, 'w')
+class Tee:
+    def __init__(self, *files): self.files = files
+    def write(self, data):
+        for f in self.files: f.write(data)
+    def flush(self):
+        for f in self.files: f.flush()
+sys.stdout = Tee(sys.stdout, log_file)
+sys.stderr = Tee(sys.stderr, log_file)
+
+if __name__ == "__main__":
+    print("Saving to:", RESULTS_DIR)
+
 # Setup environment
 os.environ['PYTHONWARNINGS'] = 'ignore'
 start_time = time.time()
-RESULTS_DIR = os.path.join(BASE_DIR, 'results')
-os.makedirs(RESULTS_DIR, exist_ok=True)
 # CUDA performance boost
 torch.backends.cudnn.enabled = True
 torch.backends.cudnn.benchmark = True
-
-# Ensure results directory exists
-os.makedirs('results', exist_ok=True)
-os.environ['PYTHONWARNINGS'] = 'ignore'
-start_time = time.time()
-# Updated imports for metrics and PCA
-from typing import Dict, Tuple, List # Keep for potential future use, though Dict isn't used now
-from scipy.signal import lfilter # Added for pink noise generation
-from torch.amp import autocast, GradScaler # Added for mixed precision training
 
 # --- Configuration ---
 N_EEG_CHANNELS = 3
@@ -70,19 +91,10 @@ USE_RESIDUALS = True # Flag for SCOFNA's ConvBlocks
 torch.backends.cudnn.enabled = True
 torch.backends.cudnn.benchmark = True
 
-# Ensure the results directory exists
-if not os.path.exists('results'):
-    os.makedirs('results')
-
 # --- Utility Functions ---
 # calculate_band_power function removed as requested
 
 # --- FFT Layer (Handles Multi-channel) ---
-
-
-# Ensure the results directory exists
-if not os.path.exists('results'):
-    os.makedirs('results')
 
 # --- Utility Functions ---
 # calculate_band_power function removed as requested
@@ -564,7 +576,8 @@ if torch.cuda.is_available():
 else:
     device = torch.device('cpu')
     DEVICE_NAME = 'CPU'
-print(f"Using device: {device}")
+if __name__ == "__main__":
+    print(f"Using device: {device}")
 
 def set_memory_fraction(fraction: float):
     """
@@ -573,55 +586,106 @@ def set_memory_fraction(fraction: float):
     """
     if device.type == 'cuda':
         try:
-            torch.cuda.set_per_process_memory_fraction(fraction, device=device)
+            # get integer index (fallback to current device)
+            idx = device.index if getattr(device, 'index', None) is not None else torch.cuda.current_device()
+            torch.cuda.set_per_process_memory_fraction(fraction, idx)
             print(f"Set GPU memory fraction to {fraction}")
         except Exception as e:
             print(f"Warning: Could not set memory fraction: {e}")
 
+import os
+import torch
+import numpy as np
+from torch import nn, optim
+from torch.nn import functional as F
+from torch.utils.data import DataLoader, TensorDataset
+from torch.amp import autocast, GradScaler
+from torch.optim.lr_scheduler import CosineAnnealingLR
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+class CudaPrefetcher:
+    """
+    Wraps a DataLoader to perform non-blocking host->device transfers inside workers.
+    """
+    def __init__(self, loader, device):
+        self.loader = loader
+        self.device = device
+    def __iter__(self):
+        for X_cpu, y_cpu in self.loader:
+            yield (X_cpu.to(self.device, non_blocking=True),
+                   y_cpu.to(self.device, non_blocking=True))
+    def __len__(self):
+        return len(self.loader)
+
+
 def train_model(model,
                 X_train, y_train,
                 X_val,   y_val,
-                epochs=EPOCHS,
+                epochs=150,
                 batch_size=256,
-                lr=LEARNING_RATE,
-                weight_decay=WEIGHT_DECAY,
-                patience=PATIENCE,
+                lr=4e-4,
+                weight_decay=0.02,
+                patience=150,
                 grad_clip_value=1.0,
                 epoch_cb=None):
-    model.to(device)
-    scaler = GradScaler() if device.type == "cuda" else None
+    """
+    Trains the given model with mixed precision, compiled kernels, and a CUDA-friendly loader.
+    """
+    model = model.to(device)
+    try:
+        model = torch.compile(model)
+        print("✅ Model compiled for maximum speed")
+    except Exception as e:
+        print(f"⚠️ torch.compile failed: {e}")
 
-    train_ds = TensorDataset(torch.FloatTensor(X_train), torch.LongTensor(y_train.astype(int)))
-    val_ds   = TensorDataset(torch.FloatTensor(X_val),   torch.LongTensor(y_val.astype(int)))
+    scaler = GradScaler() if device.type == 'cuda' else None
 
-    num_workers = min(4, os.cpu_count())
+    # prepare datasets
+    train_ds = TensorDataset(torch.from_numpy(X_train).float(), torch.from_numpy(y_train.astype(int)))
+    val_ds   = TensorDataset(torch.from_numpy(X_val).float(),   torch.from_numpy(y_val.astype(int)))
 
-    train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True,
-                              num_workers=8, pin_memory=(device.type=='cuda'),
-                              persistent_workers=True, prefetch_factor=4)
-    val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False, drop_last=False,
-                            num_workers=num_workers, pin_memory=(device.type=='cuda'), prefetch_factor=2)
+    # fixed, moderate number of workers
+    num_workers = min(4, os.cpu_count() or 1)
+    base_train_loader = DataLoader(
+        train_ds,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=num_workers,
+        pin_memory=(device.type=='cuda'),
+        persistent_workers=True,
+        prefetch_factor=2
+    )
+    # wrap for CUDA prefetch if GPU
+    train_loader = CudaPrefetcher(base_train_loader, device) if device.type=='cuda' else base_train_loader
+
+    val_loader = DataLoader(
+        val_ds,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=num_workers,
+        pin_memory=(device.type=='cuda'),
+        persistent_workers=True,
+        prefetch_factor=2
+    )
 
     optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
     scheduler = CosineAnnealingLR(optimizer, T_max=epochs, eta_min=lr*0.01)
     criterion = nn.CrossEntropyLoss()
 
-    train_losses, val_losses, val_accs, val_rmses, val_maes = [], [], [], [], []
-    best_val_loss = float("inf")
+    train_losses, val_losses, val_accs = [], [], []
+    best_val_loss = float('inf')
     best_state = None
     epochs_no_improve = 0
 
     for epoch in range(1, epochs+1):
         model.train()
-        running_loss, batches = 0.0, 0
+        running_loss = 0.0
         for Xb, yb in train_loader:
-            Xb, yb = Xb.to(device), yb.to(device)
             optimizer.zero_grad()
             with autocast(device_type=device.type):
                 out = model(Xb)
                 loss = criterion(out, yb)
-            if torch.isnan(loss) or torch.isinf(loss):
-                continue
             if scaler:
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
@@ -633,44 +697,29 @@ def train_model(model,
                 torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip_value)
                 optimizer.step()
             running_loss += loss.item()
-            batches += 1
+        train_losses.append(running_loss / len(train_loader))
 
-        train_losses.append(running_loss / batches if batches > 0 else float("nan"))
-
-        # Validation
+        # validation
         model.eval()
-        v_loss, v_batches, correct, total = 0.0, 0, 0, 0
-        y_true_batches, y_pred_batches = [], []
-
+        v_loss = 0.0
+        correct = 0
+        total = 0
         with torch.no_grad():
             for Xb, yb in val_loader:
-                Xb, yb = Xb.to(device), yb.to(device)
-                out = model(Xb)
-                loss = criterion(out, yb)
-                if torch.isnan(loss) or torch.isinf(loss):
-                    continue
+                out = model(Xb.to(device),)
+                loss = criterion(out, yb.to(device))
                 v_loss += loss.item()
-                v_batches += 1
                 _, pred = out.max(1)
-                correct += (pred == yb).sum().item()
+                correct += (pred == yb.to(device)).sum().item()
                 total += yb.size(0)
-                y_true_batches.append(yb.cpu().numpy())
-                y_pred_batches.append(pred.cpu().numpy())
-
-        val_losses.append(v_loss / v_batches if v_batches > 0 else float("nan"))
-        val_accs.append(correct / total if total > 0 else float("nan"))
-        if len(y_true_batches) > 0:
-            y_true = np.concatenate(y_true_batches)
-            y_pred = np.concatenate(y_pred_batches)
-            val_rmses.append(np.sqrt(mean_squared_error(y_true, y_pred)))
-            val_maes.append(mean_absolute_error(y_true, y_pred))
-        else:
-            val_rmses.append(float("nan")); val_maes.append(float("nan"))
+        avg_val = v_loss / len(val_loader)
+        acc_val = correct / total if total>0 else 0.0
+        val_losses.append(avg_val)
+        val_accs.append(acc_val)
 
         scheduler.step()
-        current_val_loss = val_losses[-1]
-        if not np.isnan(current_val_loss) and current_val_loss < best_val_loss:
-            best_val_loss = current_val_loss
+        if avg_val < best_val_loss:
+            best_val_loss = avg_val
             best_state = model.state_dict()
             epochs_no_improve = 0
         else:
@@ -683,22 +732,20 @@ def train_model(model,
             epoch_cb(epoch, epochs)
 
         if epoch % 10 == 0 or epoch == epochs:
-            print(f"Epoch {epoch:02d}: TrainLoss={train_losses[-1]:.4f}, ValLoss={val_losses[-1]:.4f}, ValAcc={val_accs[-1]:.4f}")
+            print(f"Epoch {epoch}: TrainLoss={train_losses[-1]:.4f} ValLoss={avg_val:.4f} ValAcc={acc_val:.4f}")
 
-    if best_state:
+    if best_state is not None:
         model.load_state_dict(best_state)
 
     return model, {
-        "train_loss": train_losses,
-        "val_loss": val_losses,
-        "val_acc": val_accs,
-        "val_rmse": val_rmses,
-        "val_mae": val_maes
+        'train_loss': train_losses,
+        'val_loss': val_losses,
+        'val_acc': val_accs
     }
+
 
 def evaluate_model(model, X_test, y_test, batch_size=BATCH_SIZE):
     """ Evaluates the model and returns accuracy, RMSE, MAE, confusion matrix, predictions, and labels. """
-    model.to(device)
     model.eval()
 
     # Determine default num_classes based on model's final layer
@@ -822,10 +869,10 @@ def plot_comparison(histories, labels, dataset_name,
         plt.grid(True)
 
     plt.tight_layout()
-    out_path = os.path.join(RESULTS_DIR, f"{dataset_name}_training_comparison_full.png")
+    out_path = os.path.join(RESULTS_DIR, f"{dataset_name}_comparison_metrics.png")
     plt.savefig(out_path)
     plt.close()
-    print(f"✅ Saved: {out_path}")
+    print(f"✅ Saved comparison plot: {out_path}")
 
 def plot_fft_spectrum(signal: np.ndarray, sampling_rate: int, signal_name: str, results_dir: str):
     """
@@ -845,7 +892,7 @@ def plot_fft_spectrum(signal: np.ndarray, sampling_rate: int, signal_name: str, 
     plt.legend(fontsize=10)
     plt.tight_layout()
 
-    save_path = os.path.join(results_dir, f"{signal_name}_FFT_Spectrum.png")
+    save_path = os.path.join(RESULTS_DIR, f"{signal_name}_fft_spectrum.png")
     try:
         plt.savefig(save_path, dpi=300)
         print(f"FFT spectrum saved to: {save_path}")
@@ -895,7 +942,7 @@ def plot_eeg_like_stack(X_data, y_data, dataset_name, n_examples=3):
 
 
 def plot_confusion_matrix(conf_matrix, classes, title, dataset_name, model_name):
-    filename = f'results/{dataset_name}_{model_name}_confusion.png'
+    out_path = os.path.join(RESULTS_DIR, f"{dataset_name}_{model_name}_confusion_matrix.png")
     plt.figure(figsize=(6, 5))
 
     # Ensure classes are hashable (e.g., ints or strings) for mapping later if needed
@@ -923,16 +970,15 @@ def plot_confusion_matrix(conf_matrix, classes, title, dataset_name, model_name)
 
     plt.title(title, fontsize=14)
     plt.tight_layout()
-    plt.savefig(os.path.join(RESULTS_DIR, f"{dataset_name}_training_comparison.png"))
+    plt.savefig(out_path)
     plt.close()
-    print(f"Saved confusion matrix: {filename}")
+    print(f"Saved confusion matrix: {out_path}")
 
 
 # --- NEW Plotting Function: Training Data Scatter via PCA ---
 def plot_training_scatter(X_train, y_train, dataset_name):
     """ Plots a scatter of first two PCA components of the training data. """
-    out_file = f"{dataset_name}_training_scatter_pca.png"
-    out_path = os.path.join(RESULTS_DIR, out_file)
+    out_path = os.path.join(RESULTS_DIR, f"{dataset_name}_scatter_pca.png")
     print(f"Generating PCA scatter plot for {dataset_name} training data...")
 
     try:
@@ -982,7 +1028,7 @@ def scale_multi_channel_data(X_train, X_val, X_test):
          return X_train, X_val, X_test, None
     n_train_samples, n_channels, n_timesteps = X_train.shape
     if n_channels <= 0 or n_timesteps <= 0: # Check for invalid dimensions
-        print(f"Warning: Invalid dimensions for scaling ({n_channels} channels, {n_timesteps} timesteps). Returning unscaled data.")
+        print(f"Warning: Invalid dimensions for scaling ({n_channels} channels, {n_timesteps}). Returning unscaled data.")
         return X_train, X_val, X_test, None
 
     scalers = [StandardScaler() for _ in range(n_channels)]
@@ -1394,6 +1440,35 @@ def load_audio_data_multi_channel(n_samples=1000, n_timesteps=1024, n_channels=N
          X_train_s=np.nan_to_num(X_train_s); X_val_s=np.nan_to_num(X_val_s); X_test_s=np.nan_to_num(X_test_s)
     return X_train_s, X_val_s, X_test_s, y_train, y_val, y_test, sampling_rate
 
+# --- CO3A Raw EEG Loader ---
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+def load_co3a_raw_eeg(
+    file_path=os.path.join(BASE_DIR, 'co3a0000456.rd.000'),
+    sampling_rate=128.0
+):
+    """
+    Parses a CO3A .rd file of shape (trial, chan_idx, sample_idx, value).
+    Returns X_train, X_val, X_test, y_train, y_val, y_test, sampling_rate.
+    """
+    # load numeric data skipping any line that starts with '#'
+    data = np.genfromtxt(file_path, comments='#', dtype=float)
+    # infer dimensions
+    n_trials  = int(data[:,0].max() + 1)
+    n_chans   = int(data[:,1].max() + 1)
+    n_samples = int(data[:,2].max() + 1)
+    # reshape into (trials, channels, samples)
+    X = data[:,3].reshape(n_trials, n_chans, n_samples)
+    # placeholder labels (replace as needed)
+    y = np.zeros(n_trials, dtype=int)
+    # split into train/val/test
+    X_tr, X_tmp, y_tr, y_tmp = train_test_split(X, y, test_size=0.3, random_state=42)
+    X_val, X_te, y_val, y_te = train_test_split(X_tmp, y_tmp, test_size=0.5, random_state=42)
+    return X_tr, X_val, X_te, y_tr, y_val, y_te, sampling_rate
+
+from c03a_graph_loader import load_c03a_graph
+
 def run_fold(dataset_name: str,
              X_pool: np.ndarray,
              y_pool: np.ndarray,
@@ -1402,80 +1477,201 @@ def run_fold(dataset_name: str,
              test_idx: np.ndarray,
              fold: int,
              epochs: int = EPOCHS,
-             epoch_cb=None) -> Dict[str, Tuple[float,float,float]]:
+             epoch_cb=None,
+             selected_model=None,
+             device="cuda"):
     """
     Runs training+evaluation on one CV fold.
     Returns a dict mapping model_name -> (acc, rmse, mae).
     """
     n_samples, n_channels, n_timesteps = X_pool.shape
 
-    # split
+    # 1) Split train/test for this fold
     X_tr, y_tr = X_pool[train_idx], y_pool[train_idx]
     X_te, y_te = X_pool[test_idx],  y_pool[test_idx]
 
-    # further split train→train/val for SNN
+    # 2) Further split training for SNN
     X_tr_full, X_val_full, y_tr_full, y_val_full = train_test_split(
         X_tr.reshape(len(train_idx), -1), y_tr,
         test_size=0.2, stratify=y_tr, random_state=fold
     )
 
-    # instantiate fresh models
+    # 3) Instantiate fresh models
     num_classes = len(np.unique(y_pool))
-    models = {
-      'SNN_V2':       StandardNN_Simple_BN_V2(n_channels*n_timesteps, HIDDEN_SIZE, num_classes),
-      'FENS_MLP_V4':  FENS_MLP_V4(n_channels, n_timesteps, HIDDEN_SIZE, num_classes, sampling_rate),
-      'SCOFNA_Conv_V4': SCOFNA_Conv_V4(n_channels, n_timesteps, HIDDEN_SIZE, num_classes, sampling_rate)
+    models_all = {
+        'SNN_V2':        StandardNN_Simple_BN_V2(n_channels * n_timesteps, HIDDEN_SIZE, num_classes),
+        'FENS_MLP_V4':   FENS_MLP_V4(n_channels, n_timesteps, HIDDEN_SIZE, num_classes, sampling_rate),
+        'SCOFNA_Conv_V4': SCOFNA_Conv_V4(n_channels, n_timesteps, HIDDEN_SIZE, num_classes, sampling_rate)
     }
+    models = {selected_model: models_all[selected_model]} if selected_model else models_all
 
-    results = {}
-    histories = {}
-    conf_mats = {}
+    # 4) Move each model to device and compile its forward once
+    import torch
+    for name, m in models.items():
+        m.to(device)
+        try:
+            # Compile only the forward method, preserving Module parameters
+            m.forward = torch.compile(m.forward)
+        except Exception:
+            pass
+
+    results, histories, conf_mats = {}, {}, {}
+
+    # 5) Train & evaluate each model
     for name, model in models.items():
-        # select appropriate inputs
         if name.startswith('SNN'):
-            X_tr_i,  y_tr_i,  X_val_i,  y_val_i  = X_tr_full,   y_tr_full,   X_val_full,   y_val_full
-            X_te_i,  y_te_i  = X_te.reshape(len(test_idx), -1), y_te
+            X_tr_i, y_tr_i = X_tr_full,   y_tr_full
+            X_val_i, y_val_i = X_val_full, y_val_full
+            X_te_i, y_te_i = X_te.reshape(len(test_idx), -1), y_te
         else:
-            X_tr_i = X_tr.reshape(len(train_idx), n_channels, n_timesteps)
-            X_val_i = X_tr_i
-            X_te_i  = X_te.reshape(len(test_idx), n_channels, n_timesteps)
+            X_tr_i   = X_tr.reshape(len(train_idx), n_channels, n_timesteps)
+            X_val_i  = X_tr_i
+            X_te_i   = X_te.reshape(len(test_idx), n_channels, n_timesteps)
             y_tr_i, y_val_i, y_te_i = y_tr, y_tr, y_te
 
-        # train & eval
         trained, history = train_model(
-            model, X_tr_i, y_tr_i, X_val_i, y_val_i,
-            epochs=epochs, batch_size=BATCH_SIZE,
-            lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY,
-            patience=PATIENCE, grad_clip_value=1.0,
+            model,
+            X_tr_i, y_tr_i,
+            X_val_i, y_val_i,
+            epochs=epochs,
+            batch_size=BATCH_SIZE,
+            lr=LEARNING_RATE,
+            weight_decay=WEIGHT_DECAY,
+            patience=PATIENCE,
+            grad_clip_value=1.0,
             epoch_cb=epoch_cb
         )
+
         acc, rmse, mae, cm, _, _ = evaluate_model(trained, X_te_i, y_te_i)
-        results[name] = (acc, rmse, mae)
-        conf_mats[name] = cm
-        histories[name] = history
+
+        results[name]    = (acc, rmse, mae)
+        conf_mats[name]  = cm
+        histories[name]  = history
 
     return results, histories, conf_mats
-    
-    
-# --- Expose for runner.py ---
+
+
+
+# --- Custom Dataset Loader ---
+def load_custom_auto(filepath, sampling_rate: float = 128.0):
+    """Universal Custom loader: accepts any supported file and returns splits."""
+    return load_any_file(filepath)
+
+def load_any_file(filepath):
+    import tempfile, tarfile, zipfile
+    ext = os.path.splitext(filepath)[-1].lower()
+    sampling_rate = 128.0  # default
+
+    if ext == '.csv':
+        print("Loading CSV file...")
+        data = np.loadtxt(filepath, delimiter=',')
+        data = data[:, np.newaxis, :] if data.ndim == 2 else data[np.newaxis, np.newaxis, :]
+
+    elif ext == '.edf':
+        print("Loading EDF file...")
+        import mne
+        raw = mne.io.read_raw_edf(filepath, preload=True, verbose=False)
+        data = raw.get_data().T
+        data = data[:, np.newaxis, :] if data.ndim == 2 else data[np.newaxis, np.newaxis, :]
+
+    elif ext == '.mat':
+        print("Loading MAT file...")
+        import scipy.io
+        mat = scipy.io.loadmat(filepath)
+        key = [k for k in mat.keys() if not k.startswith('__')][0]
+        data = mat[key]
+        data = data[:, np.newaxis, :] if data.ndim == 2 else data[np.newaxis, np.newaxis, :]
+
+    elif ext == '.txt':
+        print("Loading TXT file...")
+        raw_txt = np.loadtxt(filepath)
+        # drop any rows that contain NaNs (e.g. blank/malformed lines)
+        if raw_txt.ndim == 2:
+            raw_txt = raw_txt[~np.isnan(raw_txt).any(axis=1)]
+        if raw_txt.shape[1] == 4:
+            print("Detected C03A format (trial, chan, sample, value).")
+            n_trials = int(np.nanmax(raw_txt[:,0]) + 1)
+            n_chans  = int(np.nanmax(raw_txt[:,1]) + 1)
+            n_samples= int(np.nanmax(raw_txt[:,2]) + 1)
+            data = np.zeros((n_trials, n_chans, n_samples))
+            for t, c, s, v in raw_txt:
+                data[int(t), int(c), int(s)] = v
+        else:
+            print("Detected regular TXT format.")
+            data = raw_txt[:, np.newaxis, :] if raw_txt.ndim == 2 else raw_txt[np.newaxis, np.newaxis, :]
+
+    elif ext in ['.zip', '.tar.gz', '.tar']:
+        print(f"Extracting archive: {filepath} ...")
+        with tempfile.TemporaryDirectory() as tmp:
+            # Unzip or untar
+            if ext == '.zip':
+                with zipfile.ZipFile(filepath, 'r') as z:
+                    z.extractall(tmp)
+            else:  # .tar.gz or .tar
+                with tarfile.open(filepath, 'r:*') as t:
+                    t.extractall(tmp)
+
+            # Find the first usable data file inside
+            candidates = []
+            for root, _, files in os.walk(tmp):
+                for f in files:
+                    if f.endswith(('.npy', '.000', '.txt', '.csv', '.edf', '.mat')):
+                        candidates.append(os.path.join(root, f))
+
+            if not candidates:
+                raise ValueError("No valid data files found inside archive.")
+
+            # Sort alphabetically for consistency
+            candidates.sort()
+            datafile = candidates[0]
+            print(f"Found inside archive: {os.path.basename(datafile)}")
+            return load_any_file(datafile)  # recursive call on the extracted file
+
+    elif ext == '.000':
+        print("Loading C03A .000 EEG file...")
+        raw = np.genfromtxt(filepath, comments='#', dtype=float)
+        # drop any rows that contain NaNs before inferring dims
+        if raw.ndim == 2:
+            raw = raw[~np.isnan(raw).any(axis=1)]
+        if raw.ndim == 2 and raw.shape[1] >= 4:
+            n_trials  = int(np.nanmax(raw[:,0]) + 1)
+            n_chans   = int(np.nanmax(raw[:,1]) + 1)
+            n_samples = int(np.nanmax(raw[:,2]) + 1)
+            data = np.zeros((n_trials, n_chans, n_samples))
+            for t, c, s, v in raw:
+                data[int(t), int(c), int(s)] = v
+        else:
+            raise ValueError("Invalid .000 file structure.")
+    else:
+        raise ValueError(f"Unsupported file type: {ext}")
+
+    # Splitting logic
+    n_samples = data.shape[0]
+    y = np.zeros(n_samples, dtype=int)
+
+    if n_samples < 4:
+        print("Warning: Very few samples. Skipping train/val/test split.")
+        return data, data, data, y, y, y, sampling_rate
+
+    from sklearn.model_selection import train_test_split
+    X_train, X_tmp, y_train, y_tmp = train_test_split(
+        data, y, test_size=0.3, stratify=y if np.unique(y).size > 1 else None, random_state=42
+    )
+    X_val, X_test, y_val, y_test = train_test_split(
+        X_tmp, y_tmp, test_size=0.5, stratify=y_tmp if np.unique(y_tmp).size > 1 else None, random_state=42
+    )
+    return X_train, X_val, X_test, y_train, y_val, y_test, sampling_rate
+
 data_loaders = {
-    "EEG": load_eeg_data_multi_channel,
-    "ECG": load_ecg_data_multi_channel,
-    "Audio": load_audio_data_multi_channel
+    "EEG":    load_eeg_data_multi_channel,
+    "ECG":    load_ecg_data_multi_channel,
+    "Audio":  load_audio_data_multi_channel,
+    "Custom": load_custom_auto   # <-- use generic loader for any file
 }
+
 n_splits = 5
 
 if __name__ == "__main__":
     from window import App
     App().mainloop()
 
-def plot_confusion_matrix(cm, labels, title, out_path):
-    plt.figure(figsize=(6,5))
-    sns.heatmap(cm, annot=True, fmt='.0f', cmap='Blues',
-                xticklabels=labels, yticklabels=labels)  # use .0f to handle floats
-    plt.title(title)
-    plt.xlabel('Predicted')
-    plt.ylabel('True')
-    plt.tight_layout()
-    plt.savefig(out_path)
-    plt.close()

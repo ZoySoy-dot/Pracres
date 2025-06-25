@@ -1,0 +1,47 @@
+
+Generating Synthetic Multi-Channel EEG Data V4 (3 channels, 256 timesteps)...
+Scaling data per channel...
+Scaling complete.
+EEG Data Shapes: Train=(700, 3, 256), Val=(150, 3, 256), Test=(150, 3, 256)
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.5073 ValLoss=0.6609 ValAcc=0.6900
+Epoch 20: TrainLoss=0.2322 ValLoss=0.5630 ValAcc=0.6900
+Epoch 30: TrainLoss=0.0936 ValLoss=0.5333 ValAcc=0.7400
+Epoch 40: TrainLoss=0.0367 ValLoss=0.5086 ValAcc=0.7700
+Epoch 50: TrainLoss=0.0285 ValLoss=0.4674 ValAcc=0.8000
+Epoch 60: TrainLoss=0.0274 ValLoss=0.4496 ValAcc=0.8100
+Epoch 70: TrainLoss=0.0215 ValLoss=0.4461 ValAcc=0.8100
+Epoch 80: TrainLoss=0.0216 ValLoss=0.4445 ValAcc=0.8100
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8220
+Test RMSE: 0.4219
+Test MAE: 0.1780
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_204453/EEG/comparison_metrics/EEG_run1_fold1_comparison_metrics.png
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.4971 ValLoss=0.6621 ValAcc=0.7000
+Epoch 20: TrainLoss=0.2277 ValLoss=0.5639 ValAcc=0.7100
+Epoch 30: TrainLoss=0.0840 ValLoss=0.4702 ValAcc=0.7900
+Epoch 40: TrainLoss=0.0384 ValLoss=0.4033 ValAcc=0.8300
+Epoch 50: TrainLoss=0.0299 ValLoss=0.3657 ValAcc=0.8500
+Epoch 60: TrainLoss=0.0251 ValLoss=0.3518 ValAcc=0.8500
+Epoch 70: TrainLoss=0.0213 ValLoss=0.3431 ValAcc=0.8400
+Epoch 80: TrainLoss=0.0237 ValLoss=0.3391 ValAcc=0.8400
+
+--- Evaluation: OptimizedModule ---
+Test Accuracy: 0.8160
+Test RMSE: 0.4290
+Test MAE: 0.1840
+/home/zoy/Desktop/Pracres/main.py:868: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  plt.legend()
+✅ Saved comparison plot: /home/zoy/Desktop/Pracres/results/20250625_204453/EEG/comparison_metrics/EEG_run1_fold2_comparison_metrics.png
+Saved confusion matrix: /home/zoy/Desktop/Pracres/results/20250625_204453/EEG/EEG_SNN_V2_confusion_matrix.png
+zoy/Desktop/Pracres/results/20250625_204453/EEG/EEG_SNN_V2_confusion_matrix.png

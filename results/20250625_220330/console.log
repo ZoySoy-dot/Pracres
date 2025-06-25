@@ -1,0 +1,64 @@
+
+Generating Synthetic Multi-Channel EEG Data V4 (3 channels, 256 timesteps)...
+Scaling data per channel...
+Scaling complete.
+EEG Data Shapes: Train=(700, 3, 256), Val=(150, 3, 256), Test=(150, 3, 256)
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~64, Hidden: 192, Est. Total FC Input: 192
+SCOFNA V4 Initialized: FFT Features/Ch: ~64, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+✅ Model compiled for maximum speed
+Epoch 10: TrainLoss=0.4778 ValLoss=0.6460 ValAcc=0.7312
+Epoch 20: TrainLoss=0.2073 ValLoss=0.5268 ValAcc=0.7438
+Epoch 30: TrainLoss=0.0752 ValLoss=0.4168 ValAcc=0.7688
+Epoch 40: TrainLoss=0.0377 ValLoss=0.3191 ValAcc=0.8313
+Epoch 50: TrainLoss=0.0250 ValLoss=0.2768 ValAcc=0.8812
+Epoch 60: TrainLoss=0.0189 ValLoss=0.2660 ValAcc=0.8875
+Epoch 70: TrainLoss=0.0169 ValLoss=0.2673 ValAcc=0.8875
+Epoch 80: TrainLoss=0.0162 ValLoss=0.2686 ValAcc=0.8812
+Exception in thread Thread-1 (_run_training):
+Traceback (most recent call last):
+  File "/home/zoy/Desktop/Pracres/window.py", line 248, in _run_training
+    run_cv(ds, runs, folds, epochs,
+  File "/home/zoy/Desktop/Pracres/runner.py", line 84, in run_cv
+    res, hist, conf = _run_single_fold(
+                      ^^^^^^^^^^^^^^^^^
+  File "/home/zoy/Desktop/Pracres/runner.py", line 171, in _run_single_fold
+    results, histories, conf_mats = run_fold(
+                                    ^^^^^^^^^
+  File "/home/zoy/Desktop/Pracres/main.py", line 1532, in run_fold
+    trained, history = train_model(
+                       ^^^^^^^^^^^^
+  File "/home/zoy/Desktop/Pracres/main.py", line 732, in train_model
+    epoch_cb(epoch, epochs)
+  File "/home/zoy/Desktop/Pracres/runner.py", line 168, in epoch_cb
+    base_epoch_cb(epoch, total_epochs)
+  File "/home/zoy/Desktop/Pracres/runner.py", line 59, in epoch_cb
+    progress_cb(done, total_tasks)
+  File "/home/zoy/Desktop/Pracres/window.py", line 273, in _update_progress
+    self.after(0, lambda: self.progress.config(value=pct))
+  File "/usr/lib/python3.12/tkinter/__init__.py", line 872, in after
+    name = self._register(callit)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/tkinter/__init__.py", line 1603, in _register
+    self.tk.createcommand(name, f)
+RuntimeError: main thread is not in main loop
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/threading.py", line 1073, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.12/threading.py", line 1010, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/zoy/Desktop/Pracres/window.py", line 256, in _run_training
+    self._log(f"❌ Error on {ds}: {e}")
+  File "/home/zoy/Desktop/Pracres/window.py", line 283, in _log
+    self.after(0, append)
+  File "/usr/lib/python3.12/tkinter/__init__.py", line 872, in after
+    name = self._register(callit)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/tkinter/__init__.py", line 1603, in _register
+    self.tk.createcommand(name, f)
+RuntimeError: main thread is not in main loop
+   self.tk.createcommand(name, f)
+RuntimeError: main thread is not in main loop

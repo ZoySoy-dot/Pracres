@@ -1,0 +1,9 @@
+
+Generating Synthetic Multi-Channel EEG Data V4 (3 channels, 256 timesteps)...
+Scaling data per channel...
+Scaling complete.
+EEG Data Shapes: Train=(700, 3, 256), Val=(150, 3, 256), Test=(150, 3, 256)
+SNN V2 Initialized: Input: 768, HiddenSizes: 576/384/192, Output: 2
+FENS V4 (MLP) Initialized: FFT Features/Ch: ~32, Hidden: 192, Est. Total FC Input: 96
+SCOFNA V4 Initialized: FFT Features/Ch: ~32, SpatialAttn: False, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
+alse, ConvFilters: 48/96, Hidden: 192, Est. Total FC Input: 96, Residuals: True
