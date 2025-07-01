@@ -52,13 +52,20 @@ os.makedirs(RESULTS_DIR, exist_ok=True)
 
 # redirect console prints to a log file
 log_path = os.path.join(RESULTS_DIR, "console.log")
-log_file = open(log_path, 'w')
+log_file = open(log_path, "w",encoding='utf-8')
 class Tee:
     def __init__(self, *files): self.files = files
     def write(self, data):
-        for f in self.files: f.write(data)
+        for f in self.files:
+            try:
+                f.write(data)
+            except UnicodeEncodeError:
+                f.write(data.encode('utf-8', errors='replace').decode('utf-8'))
     def flush(self):
         for f in self.files: f.flush()
+    def isatty(self):
+        # Assume it's not a real terminal
+        return False
 sys.stdout = Tee(sys.stdout, log_file)
 sys.stderr = Tee(sys.stderr, log_file)
 
@@ -634,8 +641,13 @@ def train_model(model,
     """
     model = model.to(device)
     try:
-        model = torch.compile(model)
-        print("✅ Model compiled for maximum speed")
+        import platform
+        if platform.system() == "Windows":
+            model = model
+        else:
+            model = torch.compile(model)
+            print("✅ Model compiled for maximum speed")
+
     except Exception as e:
         print(f"⚠️ torch.compile failed: {e}")
 
